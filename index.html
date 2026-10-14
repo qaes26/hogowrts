@@ -1,3 +1,6 @@
+
+
+Shadia magic train lite · HTML
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -7,29 +10,30 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>قطار شادية السحري | إهداء من قيس جازي</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+ 
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-
+ 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-
+    <!-- بدل OrbitControls (غير مستخدم): أداة دمج الأشكال لتقليل عدد الرسومات -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+ 
     <style>
         :root {
             --font-ui: 'Tajawal', sans-serif;
             --font-poem: 'Amiri', serif;
             --font-magic: 'Aref Ruqaa', serif;
         }
-
+ 
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
             user-select: none;
         }
-
+ 
         html, body {
             margin: 0;
             padding: 0;
@@ -45,7 +49,9 @@
             position: fixed;
             inset: 0;
         }
-
+ 
+        canvas { display: block; }
+ 
         #webgl-container {
             position: fixed;
             inset: 0;
@@ -54,8 +60,7 @@
             z-index: 1;
             touch-action: none;
         }
-
-        /* Realistic Rain, Mist & Wand Embers Overlay */
+ 
         #magic-sparks-canvas {
             position: fixed;
             inset: 0;
@@ -64,8 +69,7 @@
             pointer-events: none;
             z-index: 4;
         }
-
-        /* Cinematic Dark Harry Potter Film Vignette & Color Grade */
+ 
         #cinematic-vignette {
             position: fixed;
             inset: 0;
@@ -75,127 +79,81 @@
                 radial-gradient(circle at 50% 45%, rgba(2, 4, 9, 0) 42%, rgba(1, 2, 6, 0.72) 82%, rgba(0, 0, 0, 0.94) 100%),
                 linear-gradient(180deg, rgba(2, 6, 15, 0.65) 0%, transparent 22%, transparent 75%, rgba(2, 4, 10, 0.85) 100%);
         }
-
+ 
         .font-poem { font-family: var(--font-poem); }
         .font-magic { font-family: var(--font-magic); }
-
+ 
+        /* بدون backdrop-filter على الموبايل: التمويه فوق مشهد يتحرك كل فريم هو أغلى شي بالـ CSS */
         .wizard-glass {
-            background: linear-gradient(160deg, rgba(6, 9, 17, 0.88), rgba(12, 8, 16, 0.92));
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: linear-gradient(160deg, rgba(6, 9, 17, 0.93), rgba(12, 8, 16, 0.95));
             border: 1px solid rgba(180, 134, 58, 0.38);
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.92), inset 0 1px 0 rgba(255, 235, 180, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 235, 180, 0.1);
         }
-
+        @media (pointer: fine) {
+            .wizard-glass {
+                background: linear-gradient(160deg, rgba(6, 9, 17, 0.88), rgba(12, 8, 16, 0.92));
+                backdrop-filter: blur(14px);
+                -webkit-backdrop-filter: blur(14px);
+            }
+        }
+ 
         .hogwarts-card {
             background: radial-gradient(circle at top, #16090e 0%, #09060e 65%, #030206 100%);
             border: 1px solid rgba(202, 154, 70, 0.6);
-            box-shadow: 0 0 70px rgba(0, 0, 0, 0.98), 0 0 35px rgba(180, 120, 40, 0.2), inset 0 0 40px rgba(0, 0, 0, 0.85);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.98), inset 0 0 30px rgba(0, 0, 0, 0.85);
         }
-
+ 
         .spell-glow-text {
-            text-shadow: 0 3px 14px rgba(0, 0, 0, 1), 0 0 18px rgba(245, 190, 90, 0.75), 0 0 35px rgba(180, 110, 30, 0.55);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 1), 0 0 14px rgba(245, 190, 90, 0.7);
         }
-
+ 
         .cam-btn {
-            background: rgba(7, 10, 18, 0.88);
+            background: rgba(7, 10, 18, 0.9);
             border: 1px solid rgba(168, 126, 55, 0.3);
             color: #cbd5e1;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .cam-btn.active {
-            background: linear-gradient(135deg, #450a0a, #78350f);
-            border-color: #eab308;
-            color: #fef08a;
-            box-shadow: 0 0 20px rgba(180, 83, 9, 0.6);
-            transform: translateY(-1px);
-        }
-
+ 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
+ 
+        /* النبض: transform فقط (لا نحرّك box-shadow لأنه يعيد الرسم كل فريم) */
         @keyframes pulseWand {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 18px rgba(180, 120, 40, 0.45); }
-            50% { transform: scale(1.02); box-shadow: 0 0 28px rgba(234, 179, 8, 0.75), 0 0 45px rgba(153, 27, 27, 0.5); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.025); }
         }
-
         .wand-btn-pulse {
+            box-shadow: 0 0 22px rgba(217, 150, 20, 0.55);
             animation: pulseWand 2.6s infinite ease-in-out;
         }
-
-        @keyframes floatMagic {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-4px); }
-        }
-
-        .float-magic {
-            animation: floatMagic 4s ease-in-out infinite;
-        }
-
-        @keyframes snitchPulse {
-            0%, 100% { filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.9)); transform: scale(1); }
-            50% { filter: drop-shadow(0 0 18px rgba(254, 240, 138, 1)); transform: scale(1.08); }
-        }
-
+ 
         .action-magic-btn {
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(7, 10, 19, 0.96));
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(7, 10, 19, 0.98));
             border: 1px solid rgba(180, 134, 58, 0.42);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .action-magic-btn:active {
-            transform: scale(0.93);
-        }
-
+        .action-magic-btn:active { transform: scale(0.93); }
         .action-magic-btn.active-mode {
             background: linear-gradient(135deg, #7c2d12, #991b1b);
             border-color: #fbbf24;
             color: #fef08a;
-            box-shadow: 0 0 22px rgba(245, 158, 11, 0.65);
+            box-shadow: 0 0 18px rgba(245, 158, 11, 0.6);
         }
-
-        /* Mobile Safe Area Utilities */
+ 
         .mobile-safe-hud {
             padding-top: max(0.5rem, env(safe-area-inset-top));
             padding-bottom: max(0.6rem, env(safe-area-inset-bottom));
             padding-left: max(0.6rem, env(safe-area-inset-left));
             padding-right: max(0.6rem, env(safe-area-inset-right));
         }
-
-        /* Touch Ripple Indicator on Mobile Screen */
-        .touch-ripple {
-            position: fixed;
-            width: 36px;
-            height: 36px;
-            border-radius: 9999px;
-            border: 2px solid rgba(251, 191, 36, 0.85);
-            box-shadow: 0 0 18px rgba(251, 191, 36, 0.8);
-            pointer-events: none;
-            z-index: 30;
-            transform: translate(-50%, -50%) scale(0.3);
-            animation: mobileTouchRing 0.55s ease-out forwards;
-        }
-
-        @keyframes mobileTouchRing {
-            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2.1); opacity: 0; }
-        }
     </style>
 </head>
 <body class="relative select-none">
-
-    <!-- 3D WebGL Scene -->
+ 
     <div id="webgl-container"></div>
-
-    <!-- 2D Highland Rain, Interactive Finger Wand Trail & Golden Snitch Overlay -->
     <canvas id="magic-sparks-canvas"></canvas>
-
-    <!-- Dark Cinematic Film Vignette -->
     <div id="cinematic-vignette"></div>
-
-    <!-- SECRET OWL LETTER / GOLDEN SNITCH SURPRISE MODAL -->
-    <div id="secret-letter-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+ 
+    <!-- SECRET LETTER MODAL -->
+    <div id="secret-letter-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/90">
         <div class="hogwarts-card max-w-md w-full rounded-3xl p-6 text-center relative overflow-hidden border-2 border-amber-500/70">
             <div class="w-16 h-16 mx-auto mb-2 rounded-full bg-gradient-to-br from-amber-500/30 to-red-950/60 border border-amber-400/60 flex items-center justify-center text-3xl shadow-lg">
                 <span id="secret-modal-icon">🦉</span>
@@ -220,36 +178,31 @@
             </button>
         </div>
     </div>
-
-    <!-- 1. DARK HOGWARTS WELCOME MODAL -->
-    <div id="welcome-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#020306]/95 backdrop-blur-xl transition-opacity duration-700">
+ 
+    <!-- WELCOME MODAL -->
+    <div id="welcome-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#020306]/95 transition-opacity duration-700">
         <div class="hogwarts-card max-w-md w-full rounded-3xl p-6 text-center relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-700/15 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-red-900/20 rounded-full blur-3xl pointer-events-none"></div>
-
-            <!-- Dark Wax Seal & Crest -->
             <div class="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-amber-600 via-red-950 to-amber-700 p-0.5 shadow-2xl shadow-black">
                 <div class="w-full h-full rounded-full bg-[#09050b] flex flex-col items-center justify-center border border-amber-500/30">
                     <span class="text-2xl font-serif font-extrabold text-amber-400 tracking-wider">9¾</span>
                     <span class="text-[9px] text-amber-200/70">HOGWARTS</span>
                 </div>
             </div>
-
+ 
             <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-950/50 border border-amber-600/40 text-amber-300/90 text-xs font-bold mb-2">
                 <span>⚡</span>
                 <span>الرصيف السحري المظلم 9¾ • خاص لشادية</span>
                 <span>⚡</span>
             </div>
-
+ 
             <h1 class="font-magic text-3xl sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 py-1">
                 قطار شادية السحري
             </h1>
-
+ 
             <p class="text-xs sm:text-sm text-slate-300/85 mt-1 mb-4 leading-relaxed">
                 في ليلةٍ ماطرةٍ وضبابيةٍ كأفلام هاري بوتر، يشقُّ القطارُ البخاريُّ 5972 عتمةَ الجبال الحجرية، ويقف فوقه الساحرُ ليرسم بعصاته المضيئة اسمَ <strong class="text-amber-300">شادية</strong> وسط الظلام
             </p>
-
-            <!-- Spell Preview Box -->
+ 
             <div class="bg-black/70 border border-amber-600/35 rounded-2xl p-3.5 mb-4 shadow-inner">
                 <div class="text-[11px] text-amber-400/90 font-bold mb-1">🕯️ التعويذة المنقوشة في ليل السحر 🕯️</div>
                 <p class="font-poem text-base sm:text-lg text-amber-50 leading-relaxed spell-glow-text">
@@ -257,25 +210,23 @@
                     تلوحُ عصا الساحرِ باسمِ شاديةٍ .. فيُشرقُ في عتمةِ الغمامِ النورُ"
                 </p>
             </div>
-
-            <!-- Signature -->
+ 
             <div class="mb-5 py-1.5 px-4 rounded-xl bg-black/80 border border-amber-600/40 inline-flex items-center gap-2 text-xs font-bold text-amber-300">
                 <span>🕯️</span>
                 <span>إهداء خاص إلى: شادية • من إعداد قيس جازي</span>
                 <span>🕯️</span>
             </div>
-
+ 
             <button id="board-train-btn" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#450a0a] via-[#78350f] to-[#450a0a] border border-amber-500/70 text-amber-100 font-extrabold text-base sm:text-lg shadow-xl shadow-black active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
                 <span>ادخلي عالم السحر المظلم يا شادية</span>
                 <span>🪄🚂</span>
             </button>
         </div>
     </div>
-
-    <!-- 2. MOBILE BOTTOM-SHEET BOOK OF SPELLS & QAIS'S LETTER MODAL -->
-    <div id="spells-modal" class="fixed inset-0 z-40 hidden items-end sm:items-center justify-center p-0 sm:p-5 bg-black/85 backdrop-blur-md">
+ 
+    <!-- SPELLS MODAL -->
+    <div id="spells-modal" class="fixed inset-0 z-40 hidden items-end sm:items-center justify-center p-0 sm:p-5 bg-black/90">
         <div class="hogwarts-card w-full max-w-lg max-h-[82dvh] rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden border-t-2 border-amber-500/70">
-            <!-- Mobile Pull Handle -->
             <div class="w-12 h-1.5 bg-amber-500/40 rounded-full mx-auto mt-2.5 mb-1 sm:hidden"></div>
             <div class="px-4 py-2.5 border-b border-amber-600/30 flex items-center justify-between bg-black/60">
                 <div class="flex items-center gap-2">
@@ -289,7 +240,7 @@
                     ✕
                 </button>
             </div>
-
+ 
             <div class="p-3.5 overflow-y-auto space-y-2.5 flex-1">
                 <div class="bg-black/70 border border-amber-600/35 rounded-2xl p-3.5 text-center">
                     <div class="text-xs text-amber-400 font-bold mb-1">🕯️ رسالة قيس جازي إلى شادية 🕯️</div>
@@ -297,17 +248,16 @@
                         يا شادية، في هذا الليل السينمائي المظلم على جسر هوجورتس العتيق، ينطلق القطار البخاري حاملاً أشواقي إليكِ، ويقف الساحر فوقه ليشقَّ عتمة الضباب والمطر بكلمات حبِّكِ المرسومة بنور السحر الخالص.
                     </p>
                 </div>
-
+ 
                 <div class="text-xs font-bold text-amber-400 px-1">🪄 اختاري تعويذة ليطلقها الساحر في الظلام:</div>
                 <div id="spells-list-container" class="space-y-2 pb-4"></div>
             </div>
         </div>
     </div>
-
-    <!-- 3. COMPACT MOBILE-FIRST HUD OVERLAY (MAXIMIZES 3D VERTICAL VIEWPORT) -->
+ 
+    <!-- HUD -->
     <div class="fixed inset-0 z-20 pointer-events-none flex flex-col justify-between mobile-safe-hud">
-
-        <!-- TOP COMPACT MOBILE BAR + TRANSLUCENT SPELL BANNER -->
+ 
         <div class="w-full max-w-md mx-auto flex flex-col gap-1.5">
             <header class="wizard-glass rounded-2xl px-3 py-1.5 flex items-center justify-between pointer-events-auto">
                 <div class="flex items-center gap-2">
@@ -324,8 +274,7 @@
                         <p class="text-[9px] text-amber-200/80 font-semibold mt-0.5">إهداء خاص من قيس جازي ♥</p>
                     </div>
                 </div>
-
-                <!-- Mobile One-Thumb Quick Top Controls -->
+ 
                 <div class="flex items-center gap-1">
                     <button id="whistle-btn" class="cam-btn w-9 h-9 rounded-xl text-amber-300 text-sm font-bold flex items-center justify-center cursor-pointer active:scale-90 transition" title="صافرة القطار البعيدة">
                         🚂
@@ -338,9 +287,8 @@
                     </button>
                 </div>
             </header>
-
-            <!-- Compact Translucent Spell Poetry Card for Vertical Phone Screen -->
-            <div class="wizard-glass rounded-2xl px-3 py-1.5 text-center pointer-events-none border border-amber-500/30 bg-black/55">
+ 
+            <div class="wizard-glass rounded-2xl px-3 py-1.5 text-center pointer-events-none border border-amber-500/30">
                 <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 border border-amber-600/40 text-[9px] font-bold text-amber-400">
                     <span>🪄</span>
                     <span id="spell-title-badge">تعويذة لوموس ماكسيما في سماء هوجورتس</span>
@@ -354,22 +302,19 @@
                 </p>
             </div>
         </div>
-
-        <!-- CENTER NOTIFICATION TOAST -->
-        <div id="magic-toast" class="self-center pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-2 wizard-glass px-3.5 py-1.5 rounded-full text-[11px] font-bold text-amber-300 text-center max-w-[90vw]">
+ 
+        <!-- TOAST (ستايل مباشر بدل كلاسات Tailwind: أخف على الـ MutationObserver) -->
+        <div id="magic-toast" class="self-center pointer-events-none wizard-glass px-3.5 py-1.5 rounded-full text-[11px] font-bold text-amber-300 text-center max-w-[90vw]" style="opacity:0;transform:translateY(-8px);transition:opacity .3s ease,transform .3s ease;">
             🪄 أطلق الساحر تعويذة جديدة لشادية!
         </div>
-
-        <!-- BOTTOM THUMB-ERGONOMIC MOBILE DOCK -->
+ 
         <div class="w-full max-w-md mx-auto flex flex-col gap-1.5 pointer-events-auto">
-            <!-- Subtle Touch Gesture Pill -->
             <div class="self-center wizard-glass px-3 py-0.5 rounded-full text-[10px] text-amber-200/90 font-semibold flex items-center gap-1 pointer-events-none border border-amber-500/25">
                 <span>👆</span>
                 <span>اسحبي إصبعكِ بالسماء أو المسي القطار والساحر والكرة الذهبية</span>
             </div>
-
+ 
             <div class="wizard-glass rounded-2xl p-2 flex flex-col gap-1.5">
-                <!-- Primary Thumb Action Row -->
                 <div class="flex items-center gap-1.5">
                     <button id="cast-wand-btn" class="flex-1 min-h-[44px] py-2 px-3 rounded-xl bg-gradient-to-r from-[#450a0a] via-[#78350f] to-[#450a0a] border border-amber-500/70 text-amber-100 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 wand-btn-pulse cursor-pointer active:scale-95 transition">
                         <span class="text-base">🪄</span>
@@ -381,8 +326,7 @@
                         <span>القصائد</span>
                     </button>
                 </div>
-
-                <!-- 4 Large Touch-Friendly Animation Triggers -->
+ 
                 <div class="grid grid-cols-4 gap-1.5">
                     <button id="patronus-burst-btn" class="action-magic-btn min-h-[46px] py-1.5 px-1 rounded-xl text-sky-200 font-bold text-[10px] flex flex-col items-center justify-center gap-0.5 cursor-pointer">
                         <span class="text-base leading-none">🦌</span>
@@ -404,132 +348,127 @@
             </div>
         </div>
     </div>
-
+ 
     <script>
         /************************************************************************
-         * 1. DARK CINEMATIC SPELLS & PATRONUS WORDS FOR SHADIA
+         * 0. ملف الجودة (Quality Profile): كشف تلقائي للموبايل والأجهزة الضعيفة
+         *    للتجربة اليدوية:  ?lite  = وضع الموبايل  |  ?hq = أعلى جودة
+         ************************************************************************/
+        const UA = navigator.userAgent || '';
+        let isMobile =
+            (window.matchMedia && matchMedia('(pointer: coarse)').matches) ||
+            /Android|iPhone|iPad|iPod/i.test(UA) ||
+            (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.platform || '')) ||
+            window.innerWidth < 700;
+        if (/[?&]hq\b/.test(location.search)) isMobile = false;
+        if (/[?&]lite\b/.test(location.search)) isMobile = true;
+ 
+        const isWeak = isMobile && (
+            (navigator.hardwareConcurrency || 8) <= 4 ||
+            (navigator.deviceMemory || 8) <= 3
+        );
+        const DPR = window.devicePixelRatio || 1;
+ 
+        const Q = {
+            mobile: isMobile,
+            pixelRatio: isMobile ? (isWeak ? 0.85 : 1.0) : Math.min(DPR, 2),
+            minPixelRatio: 0.6,
+            antialias: !isMobile,
+            fpsCap: isMobile ? 30 : 0,
+            realLights: !isMobile,          // PointLight / SpotLight
+            bump: !isMobile,
+            seg: isMobile ? 0.6 : 1,        // معامل تقليل تقسيمات الأشكال
+            steam: isMobile ? (isWeak ? 10 : 14) : 32,
+            cylSteam: isMobile ? 4 : 10,
+            steamScale: isMobile ? 0.8 : 1,
+            rain: isMobile ? (isWeak ? 30 : 45) : 135,
+            embers: isMobile ? 8 : 30,
+            trees: isMobile ? 12 : 28,
+            stars: isMobile ? 300 : 600,
+            clouds: isMobile ? 5 : 10,
+            particles: isMobile ? 320 : 900,
+            burstScale: isMobile ? 0.55 : 1,
+            trail: isMobile ? 60 : 140,
+            trailPerMove: isMobile ? 1 : 3,
+            wordW: isMobile ? 640 : 1024,
+            pillarRange: isMobile ? 60 : 90,
+            texSize: isMobile ? 256 : 512
+        };
+        const S = n => Math.max(6, Math.round(n * Q.seg));
+ 
+        /************************************************************************
+         * 1. التعاويذ والسماء
          ************************************************************************/
         const WAND_SPELLS = [
-            {
-                badge: '🕯️ تعويذة لوموس ماكسيما',
-                word3D: 'شادية يا سحرَ عمري',
-                sub3D: 'إهداء خاص من قيس جازي',
-                verse: '"خرجتْ حروفُ اسمِكِ من عصا السحرِ .. لتشقَّ عتمةَ الليلِ كالبدرِ"',
-                color: '#fbbf24',
-                glowHex: 0xf59e0b
-            },
-            {
-                badge: '🦌 تعويذة إكسبكتو باترونوم',
-                word3D: 'أميرةُ قلبي شادية',
-                sub3D: 'نورٌ يحرسُ روحي في الظلام',
-                verse: '"يا شاديةَ الحُسنِ التي سكنتْ دمي .. لكِ ينحني سحرُ الخيالِ الأعظمِ"',
-                color: '#7dd3fc',
-                glowHex: 0x38bdf8
-            },
-            {
-                badge: '🔥 تعويذة النار الأبدية',
-                word3D: 'أحبّكِ يا شادية',
-                sub3D: 'ما دامَ قطارُ الليلِ يعبرُ الضباب',
-                verse: '"لوّحتُ بالعصا فكتبتُ شاديةً .. فغدتْ نجومُ الليلِ حولي حانية"',
-                color: '#fda4af',
-                glowHex: 0xe11d48
-            },
-            {
-                badge: '👑 تعويذة سيدة القلعة',
-                word3D: 'عيناكِ يا شاديةُ وطني',
-                sub3D: 'أعمقُ سحراً من ليلِ هوجورتس',
-                verse: '"في كلِّ شرارةِ نورٍ تلمعُ في الدجى .. اسمُ الحبيبةِ شاديةَ توهّجا"',
-                color: '#fde047',
-                glowHex: 0xd97706
-            },
-            {
-                badge: '⚡ تعويذة عهد قيس جازي',
-                word3D: 'شادية نبضُ قيس جازي',
-                sub3D: 'عهدٌ منقوشٌ بالذهبِ والنار',
-                verse: '"يسيرُ قطارُ الشوقِ في العتمةِ قاصداً .. قلباً بحبِّ شاديةَ باتَ خالداً"',
-                color: '#e2e8f0',
-                glowHex: 0x94a3b8
-            },
-            {
-                badge: '🌙 تعويذة قمر المرتفعات',
-                word3D: 'يا قمرَ عمري يا شادية',
-                sub3D: 'ضياؤكِ يهدي قطارَ العاشقين',
-                verse: '"ما هاري بوترُ في غوامضِ سحرهِ .. إلا أقلُّ من السحرِ في عينيكِ"',
-                color: '#bae6fd',
-                glowHex: 0x38bdf8
-            }
+            { badge: '🕯️ تعويذة لوموس ماكسيما', word3D: 'شادية يا سحرَ عمري', sub3D: 'إهداء خاص من قيس جازي',
+              verse: '"خرجتْ حروفُ اسمِكِ من عصا السحرِ .. لتشقَّ عتمةَ الليلِ كالبدرِ"', color: '#fbbf24', glowHex: 0xf59e0b },
+            { badge: '🦌 تعويذة إكسبكتو باترونوم', word3D: 'أميرةُ قلبي شادية', sub3D: 'نورٌ يحرسُ روحي في الظلام',
+              verse: '"يا شاديةَ الحُسنِ التي سكنتْ دمي .. لكِ ينحني سحرُ الخيالِ الأعظمِ"', color: '#7dd3fc', glowHex: 0x38bdf8 },
+            { badge: '🔥 تعويذة النار الأبدية', word3D: 'أحبّكِ يا شادية', sub3D: 'ما دامَ قطارُ الليلِ يعبرُ الضباب',
+              verse: '"لوّحتُ بالعصا فكتبتُ شاديةً .. فغدتْ نجومُ الليلِ حولي حانية"', color: '#fda4af', glowHex: 0xe11d48 },
+            { badge: '👑 تعويذة سيدة القلعة', word3D: 'عيناكِ يا شاديةُ وطني', sub3D: 'أعمقُ سحراً من ليلِ هوجورتس',
+              verse: '"في كلِّ شرارةِ نورٍ تلمعُ في الدجى .. اسمُ الحبيبةِ شاديةَ توهّجا"', color: '#fde047', glowHex: 0xd97706 },
+            { badge: '⚡ تعويذة عهد قيس جازي', word3D: 'شادية نبضُ قيس جازي', sub3D: 'عهدٌ منقوشٌ بالذهبِ والنار',
+              verse: '"يسيرُ قطارُ الشوقِ في العتمةِ قاصداً .. قلباً بحبِّ شاديةَ باتَ خالداً"', color: '#e2e8f0', glowHex: 0x94a3b8 },
+            { badge: '🌙 تعويذة قمر المرتفعات', word3D: 'يا قمرَ عمري يا شادية', sub3D: 'ضياؤكِ يهدي قطارَ العاشقين',
+              verse: '"ما هاري بوترُ في غوامضِ سحرهِ .. إلا أقلُّ من السحرِ في عينيكِ"', color: '#bae6fd', glowHex: 0x38bdf8 }
         ];
-
+ 
         const SKY_THEMES = [
-            {
-                name: 'ليل سجين أزكابان العاصف',
-                icon: '🌧️',
-                top: '#010205',
-                mid: '#040914',
-                bot: '#091220',
-                fog: 0x030710
-            },
-            {
-                name: 'ضباب البحيرة السوداء',
-                icon: '🌫️',
-                top: '#010405',
-                mid: '#041214',
-                bot: '#081d20',
-                fog: 0x030c0e
-            },
-            {
-                name: 'عتمة القلعة القرمزية',
-                icon: '🌑',
-                top: '#040104',
-                mid: '#10040c',
-                bot: '#1a0711',
-                fog: 0x090206
-            }
+            { name: 'ليل سجين أزكابان العاصف', icon: '🌧️', top: '#010205', mid: '#040914', bot: '#091220', fog: 0x030710 },
+            { name: 'ضباب البحيرة السوداء', icon: '🌫️', top: '#010405', mid: '#041214', bot: '#081d20', fog: 0x030c0e },
+            { name: 'عتمة القلعة القرمزية', icon: '🌑', top: '#040104', mid: '#10040c', bot: '#1a0711', fog: 0x090206 }
         ];
-
+ 
         /************************************************************************
-         * 2. REALISTIC HIGHLAND RAIN, INTERACTIVE WAND TRAIL & GOLDEN SNITCH
+         * 2. طبقة 2D: المطر + الجمر + أثر الإصبع + الكرة الذهبية
+         *    (بدون shadowBlur أبداً: نستخدم صور توهّج جاهزة drawImage)
          ************************************************************************/
         const sparksCanvas = document.getElementById('magic-sparks-canvas');
         const sCtx = sparksCanvas.getContext('2d');
         let rainDrops = [];
         let flyingEmbers = [];
         let interactiveWandTrail = [];
-
-        // Interactive Flying Golden Snitch (الكرة الذهبية المجنحة)
-        const goldenSnitch = {
-            x: 120,
-            y: 220,
-            vx: 2.2,
-            vy: 1.4,
-            targetX: 250,
-            targetY: 200,
-            wingAngle: 0,
-            sparkleTimer: 0
-        };
-
+        let touchRipples = [];
+ 
+        const goldenSnitch = { x: 120, y: 220, targetX: 250, targetY: 200, wingAngle: 0, sparkleTimer: 0 };
+ 
+        const overlayGlowCache = {};
+        function getOverlayGlow(color) {
+            if (overlayGlowCache[color]) return overlayGlowCache[color];
+            const c = document.createElement('canvas');
+            c.width = c.height = 64;
+            const g = c.getContext('2d');
+            const n = parseInt(color.slice(1), 16);
+            const r = (n >> 16) & 255, gg = (n >> 8) & 255, b = n & 255;
+            const grad = g.createRadialGradient(32, 32, 1, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(255,250,235,0.95)');
+            grad.addColorStop(0.25, `rgba(${r},${gg},${b},0.85)`);
+            grad.addColorStop(1, `rgba(${r},${gg},${b},0)`);
+            g.fillStyle = grad;
+            g.fillRect(0, 0, 64, 64);
+            overlayGlowCache[color] = c;
+            return c;
+        }
+ 
         function initWeatherOverlay() {
             resizeWeatherOverlay();
             rainDrops = [];
             flyingEmbers = [];
-
+ 
             goldenSnitch.x = sparksCanvas.width * 0.72;
             goldenSnitch.y = sparksCanvas.height * 0.36;
-
-            const rainCount = window.innerWidth < 640 ? 80 : 135;
-            for (let i = 0; i < rainCount; i++) {
+ 
+            for (let i = 0; i < Q.rain; i++) {
                 rainDrops.push({
                     x: Math.random() * sparksCanvas.width,
                     y: Math.random() * sparksCanvas.height,
                     len: 14 + Math.random() * 20,
                     vx: -3.8 - Math.random() * 2.0,
-                    vy: 12 + Math.random() * 6,
-                    alpha: 0.07 + Math.random() * 0.13
+                    vy: 12 + Math.random() * 6
                 });
             }
-
-            const emberCount = window.innerWidth < 640 ? 18 : 30;
-            for (let i = 0; i < emberCount; i++) {
+            for (let i = 0; i < Q.embers; i++) {
                 flyingEmbers.push({
                     x: Math.random() * sparksCanvas.width,
                     y: Math.random() * sparksCanvas.height,
@@ -541,14 +480,14 @@
                 });
             }
         }
-
+ 
         function resizeWeatherOverlay() {
             sparksCanvas.width = window.innerWidth;
             sparksCanvas.height = window.innerHeight;
         }
-
-        function addWandTrailParticle(x, y, customColor = null) {
-            for (let i = 0; i < 3; i++) {
+ 
+        function addWandTrailParticle(x, y, customColor = null, count = Q.trailPerMove) {
+            for (let i = 0; i < count; i++) {
                 interactiveWandTrail.push({
                     x: x + (Math.random() - 0.5) * 10,
                     y: y + (Math.random() - 0.5) * 10,
@@ -559,114 +498,110 @@
                     color: customColor || (Math.random() > 0.3 ? '#fbbf24' : '#7dd3fc')
                 });
             }
-            if (interactiveWandTrail.length > 140) {
-                interactiveWandTrail.splice(0, interactiveWandTrail.length - 140);
+            if (interactiveWandTrail.length > Q.trail) {
+                interactiveWandTrail.splice(0, interactiveWandTrail.length - Q.trail);
             }
         }
-
-        function updateWeatherOverlay(elapsed, turboMultiplier = 1.0) {
-            sCtx.clearRect(0, 0, sparksCanvas.width, sparksCanvas.height);
-
-            // 1. Slanted Highland Night Rain
+ 
+        function updateWeatherOverlay(elapsed, turbo, dt) {
+            const k = dt * 60;
+            const W = sparksCanvas.width, H = sparksCanvas.height;
+            sCtx.clearRect(0, 0, W, H);
+ 
+            // 1. مطر مائل (مسار واحد)
             sCtx.strokeStyle = 'rgba(186, 230, 253, 0.18)';
             sCtx.lineWidth = 1;
             sCtx.beginPath();
+            const rk = 0.85 + turbo * 0.15;
             for (let i = 0; i < rainDrops.length; i++) {
                 const r = rainDrops[i];
-                r.x += r.vx * (0.85 + turboMultiplier * 0.15);
-                r.y += r.vy;
-                if (r.y > sparksCanvas.height + 20) {
-                    r.y = -20;
-                    r.x = Math.random() * (sparksCanvas.width + 180);
-                }
-                if (r.x < -20) r.x = sparksCanvas.width + 20;
-
+                r.x += r.vx * rk * k;
+                r.y += r.vy * k;
+                if (r.y > H + 20) { r.y = -20; r.x = Math.random() * (W + 180); }
+                if (r.x < -20) r.x = W + 20;
                 sCtx.moveTo(r.x, r.y);
                 sCtx.lineTo(r.x + r.vx * 1.1, r.y + r.len);
             }
             sCtx.stroke();
-
-            // 2. Subtle Glowing Embers drifting from the distant train
+ 
+            // 2. جمر
             for (let i = 0; i < flyingEmbers.length; i++) {
                 const em = flyingEmbers[i];
-                em.x += em.vx * turboMultiplier;
-                em.y += em.vy + Math.sin(elapsed * 2.2 + em.phase) * 0.3;
-
-                if (em.x < -10) em.x = sparksCanvas.width + 10;
-                if (em.y < -10) em.y = sparksCanvas.height + 10;
-                if (em.y > sparksCanvas.height + 10) em.y = -10;
-
+                em.x += em.vx * turbo * k;
+                em.y += (em.vy + Math.sin(elapsed * 2.2 + em.phase) * 0.3) * k;
+                if (em.x < -10) em.x = W + 10;
+                if (em.y < -10) em.y = H + 10;
+                if (em.y > H + 10) em.y = -10;
+ 
                 const alpha = 0.25 + 0.55 * Math.abs(Math.sin(elapsed * 3.0 + em.phase));
-                sCtx.save();
+                const size = em.r * 7 * (turbo > 1.1 ? 1.3 : 1);
                 sCtx.globalAlpha = alpha;
-                sCtx.fillStyle = turboMultiplier > 1.1 ? '#fb923c' : em.color;
-                sCtx.shadowColor = em.color;
-                sCtx.shadowBlur = 6;
-                sCtx.beginPath();
-                sCtx.arc(em.x, em.y, em.r * (turboMultiplier > 1.1 ? 1.3 : 1), 0, Math.PI * 2);
-                sCtx.fill();
-                sCtx.restore();
+                sCtx.drawImage(getOverlayGlow(turbo > 1.1 ? '#fb923c' : em.color), em.x - size / 2, em.y - size / 2, size, size);
             }
-
-            // 3. Interactive Finger/Cursor Wand Trail Particles
+ 
+            // 3. أثر الإصبع
             for (let i = interactiveWandTrail.length - 1; i >= 0; i--) {
                 const pt = interactiveWandTrail[i];
-                pt.x += pt.vx;
-                pt.y += pt.vy;
-                pt.life -= 0.032;
-                if (pt.life <= 0) {
-                    interactiveWandTrail.splice(i, 1);
-                    continue;
-                }
-                sCtx.save();
+                pt.x += pt.vx * k;
+                pt.y += pt.vy * k;
+                pt.life -= 0.032 * k;
+                if (pt.life <= 0) { interactiveWandTrail.splice(i, 1); continue; }
+                const size = Math.max(2, pt.r * pt.life * 6);
                 sCtx.globalAlpha = pt.life;
-                sCtx.fillStyle = pt.color;
-                sCtx.shadowColor = pt.color;
-                sCtx.shadowBlur = 10;
+                sCtx.drawImage(getOverlayGlow(pt.color), pt.x - size / 2, pt.y - size / 2, size, size);
+            }
+ 
+            // 4. حلقات اللمس (بدل عناصر DOM)
+            for (let i = touchRipples.length - 1; i >= 0; i--) {
+                const rp = touchRipples[i];
+                rp.age += dt;
+                const t = rp.age / 0.55;
+                if (t >= 1) { touchRipples.splice(i, 1); continue; }
+                sCtx.globalAlpha = 1 - t;
+                sCtx.strokeStyle = 'rgba(251,191,36,1)';
+                sCtx.lineWidth = 2;
                 sCtx.beginPath();
-                sCtx.arc(pt.x, pt.y, pt.r * pt.life, 0, Math.PI * 2);
-                sCtx.fill();
-                sCtx.restore();
+                sCtx.arc(rp.x, rp.y, 18 * (0.3 + 1.8 * t), 0, Math.PI * 2);
+                sCtx.stroke();
             }
-
-            // 4. Animated Interactive Golden Snitch darting across the night sky
-            if (Math.random() < 0.025) {
-                goldenSnitch.targetX = 36 + Math.random() * (sparksCanvas.width - 72);
-                goldenSnitch.targetY = 145 + Math.random() * (sparksCanvas.height * 0.44);
+            sCtx.globalAlpha = 1;
+ 
+            // 5. الكرة الذهبية
+            if (Math.random() < 0.025 * k) {
+                goldenSnitch.targetX = 36 + Math.random() * (W - 72);
+                goldenSnitch.targetY = 145 + Math.random() * (H * 0.44);
             }
-            goldenSnitch.x += (goldenSnitch.targetX - goldenSnitch.x) * 0.028;
-            goldenSnitch.y += (goldenSnitch.targetY - goldenSnitch.y) * 0.028 + Math.sin(elapsed * 6) * 0.65;
+            const lerpK = 1 - Math.pow(1 - 0.028, k);
+            goldenSnitch.x += (goldenSnitch.targetX - goldenSnitch.x) * lerpK;
+            goldenSnitch.y += (goldenSnitch.targetY - goldenSnitch.y) * lerpK + Math.sin(elapsed * 6) * 0.65 * k;
             goldenSnitch.wingAngle = Math.sin(elapsed * 38) * 0.65;
-
-            if (elapsed - goldenSnitch.sparkleTimer > 0.08) {
+ 
+            if (elapsed - goldenSnitch.sparkleTimer > 0.1) {
                 goldenSnitch.sparkleTimer = elapsed;
                 interactiveWandTrail.push({
-                    x: goldenSnitch.x,
-                    y: goldenSnitch.y,
-                    vx: (Math.random() - 0.5) * 0.6,
-                    vy: 0.4,
-                    r: 1.5,
-                    life: 0.55,
-                    color: '#fde047'
+                    x: goldenSnitch.x, y: goldenSnitch.y,
+                    vx: (Math.random() - 0.5) * 0.6, vy: 0.4,
+                    r: 1.5, life: 0.55, color: '#fde047'
                 });
             }
-
+ 
             sCtx.save();
             sCtx.translate(goldenSnitch.x, goldenSnitch.y);
-
-            // Subtle Mobile Touch Target Ring around the Golden Snitch so it's easy to spot and tap on phones
+ 
             sCtx.strokeStyle = `rgba(251, 191, 36, ${0.2 + 0.2 * Math.sin(elapsed * 5)})`;
             sCtx.lineWidth = 1;
             sCtx.beginPath();
             sCtx.arc(0, 0, 19, 0, Math.PI * 2);
             sCtx.stroke();
-
-            // Fluttering Silver Wings
+ 
+            sCtx.globalAlpha = 0.85;
+            sCtx.drawImage(getOverlayGlow('#f59e0b'), -26, -26, 52, 52);
+            sCtx.globalAlpha = 1;
+ 
             sCtx.strokeStyle = 'rgba(254, 249, 195, 0.9)';
             sCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
             sCtx.lineWidth = 1.3;
-
-            // Left Wing
+ 
             sCtx.save();
             sCtx.rotate(goldenSnitch.wingAngle - 0.3);
             sCtx.beginPath();
@@ -674,8 +609,7 @@
             sCtx.fill();
             sCtx.stroke();
             sCtx.restore();
-
-            // Right Wing
+ 
             sCtx.save();
             sCtx.rotate(-goldenSnitch.wingAngle + 0.3);
             sCtx.beginPath();
@@ -683,10 +617,7 @@
             sCtx.fill();
             sCtx.stroke();
             sCtx.restore();
-
-            // Golden Snitch Core Sphere
-            sCtx.shadowColor = '#f59e0b';
-            sCtx.shadowBlur = 16;
+ 
             const snitchGrad = sCtx.createRadialGradient(-2, -2, 1, 0, 0, 8);
             snitchGrad.addColorStop(0, '#fef9c3');
             snitchGrad.addColorStop(0.5, '#fbbf24');
@@ -695,31 +626,17 @@
             sCtx.beginPath();
             sCtx.arc(0, 0, 7.5, 0, Math.PI * 2);
             sCtx.fill();
-
             sCtx.restore();
         }
-
-        // Mobile Haptic Vibration Feedback Helper
+ 
         function triggerMobileHaptic(ms = 18) {
             try {
-                if (navigator && typeof navigator.vibrate === 'function') {
-                    navigator.vibrate(ms);
-                }
+                if (navigator && typeof navigator.vibrate === 'function') navigator.vibrate(ms);
             } catch (e) {}
         }
-
-        // Spawn Visual Touch Ring on Mobile Tap
-        function spawnMobileTouchRipple(x, y) {
-            const ring = document.createElement('div');
-            ring.className = 'touch-ripple';
-            ring.style.left = `${x}px`;
-            ring.style.top = `${y}px`;
-            document.body.appendChild(ring);
-            setTimeout(() => ring.remove(), 560);
-        }
-
+ 
         /************************************************************************
-         * 3. NON-CLASHING WIZARDING AUDIO ENGINE (MASTER COMPRESSOR + DUCKING)
+         * 3. محرك الصوت
          ************************************************************************/
         class WizardingSoundEngine {
             constructor() {
@@ -729,83 +646,58 @@
                 this.melodyBus = null;
                 this.chugBus = null;
                 this.sfxBus = null;
-
                 this.isPlaying = false;
+                this.wasPlayingBeforeHide = false;
                 this.melodyInterval = null;
                 this.chugInterval = null;
                 this.stepIdx = 0;
                 this.chugStep = 0;
                 this.noiseBuffer = null;
-
-                // Cooldown timestamps to prevent any overlapping SFX
                 this.lastSpellTime = 0;
                 this.lastWhistleTime = 0;
-
-                // Calm, spaced-out Dark Minor-Key Harry Potter Celesta Melody (with rests = 0)
                 this.celestaNotes = [
-                    493.88, // B4
-                    659.25, // E5
-                    783.99, // G5
-                    739.99, // F#5
-                    659.25, // E5
-                    0,      // Breath / Rest (prevents note pile-up)
-                    987.77, // B5
-                    880.00, // A5
-                    739.99, // F#5
-                    0,      // Breath / Rest
-                    659.25, // E5
-                    783.99, // G5
-                    739.99, // F#5
-                    622.25, // D#5
-                    659.25, // E5
-                    0       // Breath / Rest
+                    493.88, 659.25, 783.99, 739.99, 659.25, 0,
+                    987.77, 880.00, 739.99, 0,
+                    659.25, 783.99, 739.99, 622.25, 659.25, 0
                 ];
             }
-
+ 
             init() {
                 if (!this.ctx) {
                     const AudioCtx = window.AudioContext || window.webkitAudioContext;
                     this.ctx = new AudioCtx();
-
-                    // Master Dynamics Compressor so sounds NEVER clip or clash
+ 
                     this.compressor = this.ctx.createDynamicsCompressor();
                     this.compressor.threshold.setValueAtTime(-20, this.ctx.currentTime);
                     this.compressor.knee.setValueAtTime(18, this.ctx.currentTime);
                     this.compressor.ratio.setValueAtTime(8, this.ctx.currentTime);
                     this.compressor.attack.setValueAtTime(0.01, this.ctx.currentTime);
                     this.compressor.release.setValueAtTime(0.25, this.ctx.currentTime);
-
+ 
                     this.masterGain = this.ctx.createGain();
                     this.masterGain.gain.setValueAtTime(0.85, this.ctx.currentTime);
-
-                    // Separate Buses for Melody, Distant Train Chug, and SFX (with automatic ducking)
+ 
                     this.melodyBus = this.ctx.createGain();
                     this.melodyBus.gain.setValueAtTime(0.75, this.ctx.currentTime);
-
                     this.chugBus = this.ctx.createGain();
                     this.chugBus.gain.setValueAtTime(0.55, this.ctx.currentTime);
-
                     this.sfxBus = this.ctx.createGain();
                     this.sfxBus.gain.setValueAtTime(0.85, this.ctx.currentTime);
-
+ 
                     this.melodyBus.connect(this.compressor);
                     this.chugBus.connect(this.compressor);
                     this.sfxBus.connect(this.compressor);
                     this.compressor.connect(this.masterGain);
                     this.masterGain.connect(this.ctx.destination);
-
-                    // Soft Filtered Noise Buffer for Distant Train Rhythm
+ 
                     const bufferSize = this.ctx.sampleRate * 1.5;
                     this.noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
                     const output = this.noiseBuffer.getChannelData(0);
-                    for (let i = 0; i < bufferSize; i++) {
-                        output[i] = (Math.random() * 2 - 1) * 0.5;
-                    }
+                    for (let i = 0; i < bufferSize; i++) output[i] = (Math.random() * 2 - 1) * 0.5;
                 }
                 if (this.ctx.state === 'suspended') this.ctx.resume();
             }
-
-            // Temporarily lower background melody volume when a spell or whistle plays
+ 
             duckBackgroundForSfx(durationSec = 1.2) {
                 if (!this.ctx || !this.melodyBus) return;
                 const now = this.ctx.currentTime;
@@ -814,111 +706,95 @@
                 this.melodyBus.gain.linearRampToValueAtTime(0.22, now + 0.06);
                 this.melodyBus.gain.linearRampToValueAtTime(0.75, now + durationSec);
             }
-
-            // Soft, Distant, Low-Frequency Steam Train Rhythm (Never clashes with high melody)
+ 
             playDistantSteamChug() {
                 if (!this.ctx || !this.noiseBuffer || !this.isPlaying) return;
                 const now = this.ctx.currentTime;
                 const src = this.ctx.createBufferSource();
                 src.buffer = this.noiseBuffer;
-
-                // Low-pass filter keeps the distant train strictly in the warm bass/low-mid range (< 150Hz)
+ 
                 const filter = this.ctx.createBiquadFilter();
                 filter.type = 'lowpass';
                 const isAccent = (this.chugStep % 4 === 0);
                 filter.frequency.setValueAtTime(isAccent ? 145 : 115, now);
-
+ 
                 const gain = this.ctx.createGain();
                 const peak = isAccent ? 0.028 : 0.016;
                 gain.gain.setValueAtTime(0.0001, now);
                 gain.gain.linearRampToValueAtTime(peak, now + 0.035);
                 gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-
+ 
                 src.connect(filter);
                 filter.connect(gain);
                 gain.connect(this.chugBus);
-
                 src.start(now);
                 src.stop(now + 0.24);
                 this.chugStep++;
             }
-
+ 
             playCelestaNote(freq, dur = 1.35, vol = 0.032) {
                 if (!this.ctx || !freq || !this.isPlaying) return;
                 const now = this.ctx.currentTime;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
-
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(freq, now);
-
                 gain.gain.setValueAtTime(0.0001, now);
                 gain.gain.linearRampToValueAtTime(vol, now + 0.03);
                 gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-
                 osc.connect(gain);
                 gain.connect(this.melodyBus);
-
                 osc.start(now);
                 osc.stop(now + dur + 0.05);
             }
-
+ 
             playWandSpellChime() {
                 if (!this.isPlaying) return;
                 this.init();
                 const nowMs = performance.now();
-                // Prevent overlapping wand chimes if tapped rapidly
                 if (nowMs - this.lastSpellTime < 650) return;
                 this.lastSpellTime = nowMs;
-
                 this.duckBackgroundForSfx(1.1);
-
-                // Clean, gentle 3-note harmonic crystal shimmer in the upper register
+ 
                 const now = this.ctx.currentTime;
-                const notes = [587.33, 880.00, 1174.66]; // D5, A5, D6
-                notes.forEach((f, idx) => {
+                [587.33, 880.00, 1174.66].forEach((f, idx) => {
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(f, now + idx * 0.08);
-
                     gain.gain.setValueAtTime(0.0001, now + idx * 0.08);
                     gain.gain.linearRampToValueAtTime(0.026, now + idx * 0.08 + 0.02);
                     gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.75);
-
                     osc.connect(gain);
                     gain.connect(this.sfxBus);
                     osc.start(now + idx * 0.08);
                     osc.stop(now + idx * 0.08 + 0.8);
                 });
             }
-
+ 
             playTrainWhistle() {
                 this.init();
                 const nowMs = performance.now();
-                // Prevent overlapping whistles
                 if (nowMs - this.lastWhistleTime < 1800) return;
                 this.lastWhistleTime = nowMs;
-
                 this.duckBackgroundForSfx(1.8);
-
+ 
                 const now = this.ctx.currentTime;
-                // Warm, distant, mellow hollow steam whistle (pure sine/triangle, no harsh sawtooth)
                 [246.94, 329.63].forEach((freq, i) => {
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
                     osc.type = i === 0 ? 'triangle' : 'sine';
                     osc.frequency.setValueAtTime(freq, now);
-
+ 
                     const filter = this.ctx.createBiquadFilter();
                     filter.type = 'lowpass';
                     filter.frequency.setValueAtTime(520, now);
-
+ 
                     gain.gain.setValueAtTime(0.0001, now);
                     gain.gain.linearRampToValueAtTime(0.022, now + 0.25);
                     gain.gain.setValueAtTime(0.022, now + 0.9);
                     gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.65);
-
+ 
                     osc.connect(filter);
                     filter.connect(gain);
                     gain.connect(this.sfxBus);
@@ -926,60 +802,62 @@
                     osc.stop(now + 1.7);
                 });
             }
-
+ 
             start() {
                 this.init();
-                this.stop(); // Clear any existing intervals so loops never double-spawn
+                this.stop();
                 this.isPlaying = true;
-
                 this.melodyInterval = setInterval(() => {
                     if (!this.isPlaying) return;
                     const f = this.celestaNotes[this.stepIdx % this.celestaNotes.length];
-                    if (f > 0) {
-                        this.playCelestaNote(f, 1.25, 0.032);
-                    }
+                    if (f > 0) this.playCelestaNote(f, 1.25, 0.032);
                     this.stepIdx++;
-                }, 780); // Spaced out so consecutive notes never muddy each other
-
+                }, 780);
                 this.chugInterval = setInterval(() => {
                     if (!this.isPlaying) return;
                     this.playDistantSteamChug();
-                }, 260);
+                }, Q.mobile ? 340 : 260);
             }
-
+ 
             stop() {
                 this.isPlaying = false;
-                if (this.melodyInterval) {
-                    clearInterval(this.melodyInterval);
-                    this.melodyInterval = null;
-                }
-                if (this.chugInterval) {
-                    clearInterval(this.chugInterval);
-                    this.chugInterval = null;
-                }
+                if (this.melodyInterval) { clearInterval(this.melodyInterval); this.melodyInterval = null; }
+                if (this.chugInterval) { clearInterval(this.chugInterval); this.chugInterval = null; }
             }
-
+ 
             toggle() {
                 this.isPlaying ? this.stop() : this.start();
                 return this.isPlaying;
             }
+ 
+            // إيقاف كامل عند إخفاء التبويب أو قفل الشاشة
+            onHidden() {
+                this.wasPlayingBeforeHide = this.isPlaying;
+                this.stop();
+                if (this.ctx && this.ctx.state === 'running') this.ctx.suspend();
+            }
+            onVisible() {
+                if (this.wasPlayingBeforeHide) this.start();
+                this.wasPlayingBeforeHide = false;
+            }
         }
-
+ 
         const soundMagic = new WizardingSoundEngine();
-
+ 
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) soundMagic.onHidden();
+            else soundMagic.onVisible();
+        });
+ 
         /************************************************************************
-         * 4. REALISTIC PROCEDURAL TEXTURES (STONE, WEATHERED METAL, SMOKE, PATRONUS)
+         * 4. تكستشرات (تُنشأ مرة واحدة وتُخزَّن)
          ************************************************************************/
-        let softGlowTex = null;
-        let volumetricCloudTex = null;
-        let wetStoneTex = null;
-        let weatheredIronTex = null;
-
+        let softGlowTex = null, volumetricCloudTex = null, wetStoneTex = null, weatheredIronTex = null;
+ 
         function getSoftGlowTexture() {
             if (softGlowTex) return softGlowTex;
             const c = document.createElement('canvas');
-            c.width = 128;
-            c.height = 128;
+            c.width = 128; c.height = 128;
             const ctx = c.getContext('2d');
             const g = ctx.createRadialGradient(64, 64, 1, 64, 64, 64);
             g.addColorStop(0, 'rgba(255, 250, 235, 1)');
@@ -991,22 +869,17 @@
             softGlowTex = new THREE.CanvasTexture(c);
             return softGlowTex;
         }
-
+ 
         function getVolumetricSteamTexture() {
             if (volumetricCloudTex) return volumetricCloudTex;
             const c = document.createElement('canvas');
-            c.width = 256;
-            c.height = 256;
+            c.width = 256; c.height = 256;
             const ctx = c.getContext('2d');
-
-            const puffs = [
-                { x: 128, y: 128, r: 110, a: 0.42 },
-                { x: 95, y: 105, r: 78, a: 0.32 },
-                { x: 160, y: 115, r: 82, a: 0.32 },
-                { x: 115, y: 158, r: 75, a: 0.28 },
+            [
+                { x: 128, y: 128, r: 110, a: 0.42 }, { x: 95, y: 105, r: 78, a: 0.32 },
+                { x: 160, y: 115, r: 82, a: 0.32 }, { x: 115, y: 158, r: 75, a: 0.28 },
                 { x: 148, y: 92, r: 68, a: 0.28 }
-            ];
-            puffs.forEach(p => {
+            ].forEach(p => {
                 const g = ctx.createRadialGradient(p.x, p.y, 4, p.x, p.y, p.r);
                 g.addColorStop(0, `rgba(203, 213, 225, ${p.a})`);
                 g.addColorStop(0.5, `rgba(100, 116, 139, ${p.a * 0.5})`);
@@ -1016,26 +889,20 @@
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 ctx.fill();
             });
-
             volumetricCloudTex = new THREE.CanvasTexture(c);
             return volumetricCloudTex;
         }
-
+ 
         function getWetStoneTexture() {
             if (wetStoneTex) return wetStoneTex;
+            const sz = Q.texSize;
             const c = document.createElement('canvas');
-            c.width = 512;
-            c.height = 512;
+            c.width = sz; c.height = sz;
             const ctx = c.getContext('2d');
-
+            ctx.scale(sz / 512, sz / 512);
             ctx.fillStyle = '#11151d';
             ctx.fillRect(0, 0, 512, 512);
-
-            const rows = 16;
-            const cols = 8;
-            const rowH = 512 / rows;
-            const colW = 512 / cols;
-
+            const rows = 16, cols = 8, rowH = 512 / rows, colW = 512 / cols;
             for (let r = 0; r < rows; r++) {
                 const offset = (r % 2) * (colW * 0.5);
                 for (let col = -1; col <= cols; col++) {
@@ -1045,23 +912,20 @@
                     ctx.fillRect(col * colW + offset + 2, r * rowH + 2, colW - 4, rowH - 4);
                 }
             }
-
             wetStoneTex = new THREE.CanvasTexture(c);
             wetStoneTex.wrapS = THREE.RepeatWrapping;
             wetStoneTex.wrapT = THREE.RepeatWrapping;
             wetStoneTex.repeat.set(4, 2);
             return wetStoneTex;
         }
-
+ 
         function getWeatheredIronTexture() {
             if (weatheredIronTex) return weatheredIronTex;
             const c = document.createElement('canvas');
-            c.width = 256;
-            c.height = 256;
+            c.width = 256; c.height = 256;
             const ctx = c.getContext('2d');
             ctx.fillStyle = '#757575';
             ctx.fillRect(0, 0, 256, 256);
-
             for (let i = 0; i < 1200; i++) {
                 const v = 95 + Math.floor(Math.random() * 50);
                 ctx.fillStyle = `rgb(${v},${v},${v})`;
@@ -1070,103 +934,133 @@
             weatheredIronTex = new THREE.CanvasTexture(c);
             return weatheredIronTex;
         }
-
-        function makeGlowSprite(colorHex, size = 3.5, opacity = 0.85) {
-            const mat = new THREE.SpriteMaterial({
-                map: getSoftGlowTexture(),
-                color: colorHex,
-                transparent: true,
-                opacity: opacity,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
+ 
+        // مواد التوهّج المشتركة: نفس اللون والشفافية = مادة واحدة (أقل تبديل حالة للـ GPU)
+        const glowMatCache = {};
+        function makeGlowSprite(colorHex, size = 3.5, opacity = 0.85, shared = true) {
+            let mat;
+            const key = colorHex + '_' + opacity;
+            if (shared && glowMatCache[key]) {
+                mat = glowMatCache[key];
+            } else {
+                mat = new THREE.SpriteMaterial({
+                    map: getSoftGlowTexture(),
+                    color: colorHex,
+                    transparent: true,
+                    opacity: opacity,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+                if (shared) glowMatCache[key] = mat;
+            }
             const s = new THREE.Sprite(mat);
             s.scale.set(size, size, 1);
             return s;
         }
-
-        // High-Contrast Organized Sky Calligraphy clearly legible from the Distant Fixed Camera
-        function createMagicalWordTexture(mainWord, subText, colorHex = '#fbbf24') {
+ 
+        function roundedRectPath(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(x, y, w, h, r);
+            } else { // سفاري القديم
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+            }
+        }
+ 
+        function createMagicalWordTexture(mainWord, subText, colorHex) {
+            const s = Q.wordW / 1024;
             const c = document.createElement('canvas');
-            c.width = 1024;
-            c.height = 420;
+            c.width = Q.wordW;
+            c.height = Math.round(420 * s);
             const ctx = c.getContext('2d');
-
+            ctx.scale(s, s);
+ 
             const g1 = ctx.createRadialGradient(512, 195, 10, 512, 195, 450);
             g1.addColorStop(0, 'rgba(245, 158, 11, 0.28)');
             g1.addColorStop(0.5, 'rgba(56, 189, 248, 0.09)');
             g1.addColorStop(1, 'rgba(0, 0, 0, 0)');
             ctx.fillStyle = g1;
             ctx.fillRect(0, 0, 1024, 420);
-
-            // Ornamental Patronus Filigree Underline
+ 
             ctx.strokeStyle = colorHex;
             ctx.lineWidth = 3;
             ctx.globalAlpha = 0.6;
             ctx.shadowColor = colorHex;
-            ctx.shadowBlur = 22;
+            ctx.shadowBlur = 22 * s;
             ctx.beginPath();
             ctx.moveTo(140, 240);
             ctx.quadraticCurveTo(512, 280, 884, 240);
             ctx.stroke();
-
+ 
             ctx.globalAlpha = 1.0;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-
-            // Outer Magical Bloom Pass
+ 
             ctx.font = 'bold 92px "Aref Ruqaa", "Amiri", serif';
             ctx.fillStyle = colorHex;
             ctx.shadowColor = colorHex;
-            ctx.shadowBlur = 45;
+            ctx.shadowBlur = 45 * s;
             ctx.fillText(mainWord, 512, 150);
-
-            // Inner Crisp Core Pass
+ 
             ctx.fillStyle = '#fffbeb';
-            ctx.shadowColor = colorHex;
-            ctx.shadowBlur = 18;
+            ctx.shadowBlur = 18 * s;
             ctx.fillText(mainWord, 512, 150);
-
-            // Subtitle
+ 
             ctx.fillStyle = '#fde68a';
             ctx.shadowColor = '#000000';
-            ctx.shadowBlur = 16;
+            ctx.shadowBlur = 16 * s;
             ctx.font = 'bold 42px "Amiri", "Tajawal", serif';
             ctx.fillText(`✦ ${subText} ✦`, 512, 305);
-
+ 
             const tex = new THREE.CanvasTexture(c);
             tex.needsUpdate = true;
             return tex;
         }
-
+ 
+        // تخزين نسخة لكل تعويذة: تُرسم مرة واحدة فقط (كانت تُرسم من جديد كل 5.8 ثانية)
+        const wordTexCache = {};
+        function getWordTexture(idx) {
+            if (!wordTexCache[idx]) {
+                const sp = WAND_SPELLS[idx];
+                wordTexCache[idx] = createMagicalWordTexture(sp.word3D, sp.sub3D, sp.color);
+            }
+            return wordTexCache[idx];
+        }
+ 
+        const plateTexCache = {};
         function createLocomotiveNameplateTexture(text) {
+            if (plateTexCache[text]) return plateTexCache[text];
+            const s = Q.mobile ? 0.5 : 1;
             const c = document.createElement('canvas');
-            c.width = 1024;
-            c.height = 200;
+            c.width = 1024 * s; c.height = 200 * s;
             const ctx = c.getContext('2d');
-
+            ctx.scale(s, s);
+ 
             ctx.fillStyle = '#2b0505';
-            ctx.beginPath();
-            ctx.roundRect(10, 10, 1004, 180, 16);
+            roundedRectPath(ctx, 10, 10, 1004, 180, 16);
             ctx.fill();
-
             ctx.lineWidth = 10;
             ctx.strokeStyle = '#b45309';
             ctx.stroke();
-
+ 
             ctx.fillStyle = '#fef08a';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.font = 'bold 62px "Amiri", "Tajawal", serif';
             ctx.fillText(text, 512, 104);
-
-            return new THREE.CanvasTexture(c);
+ 
+            plateTexCache[text] = new THREE.CanvasTexture(c);
+            return plateTexCache[text];
         }
-
+ 
         function createSkyGradientTexture(top, mid, bot) {
             const c = document.createElement('canvas');
-            c.width = 32;
-            c.height = 256;
+            c.width = 32; c.height = 256;
             const ctx = c.getContext('2d');
             const g = ctx.createLinearGradient(0, 0, 0, 256);
             g.addColorStop(0, top);
@@ -1176,50 +1070,55 @@
             ctx.fillRect(0, 0, 32, 256);
             return new THREE.CanvasTexture(c);
         }
-
+ 
         /************************************************************************
-         * 5. FIXED DISTANT 3D SCENE, GLENFINNAN VIADUCT & HOGWARTS EXPRESS
+         * 5. المشهد ثلاثي الأبعاد
          ************************************************************************/
         let scene, camera, renderer, raycaster;
-        let skyDome, lightningLight, fireboxLight;
-        let trainMasterGroup, castleGroupRef, wizardGroup, wizardRightArmPivot, wizardCapeMesh, wandTipNode, wandPointLight;
+        let skyDome, lightningLight = null, fireboxLight = null, ambientLight, hemiLight;
+        let trainMasterGroup, castleGroupRef, wizardGroup, wizardRightArmPivot, wizardCapeMesh, wandTipNode, wandPointLight = null;
         let wandBeamMesh = null;
         let trainWheels = [], connectingRods = [], steamPuffs = [], cylinderSteamPuffs = [];
-        let scrollingBridgePillars = [], scrollingRailSleepers = [], scrollingTrees = [];
+        let sleepersRoot, pillarsRoot, treeInstances = [], treeData = [];
+        let sleeperOffset = 0, pillarOffset = 0;
         let floatingCandles = [];
         let lakeLightRipples = [];
         let currentSkyWordObj = null;
-        let wandBurstParticles = [];
         let expandingMagicRings = [];
         let windowHeartLanterns = [];
-
-        // New 3D Animated Interactive Entities
+ 
         let patronus3DGroup = null;
         let patronusFlightState = { active: false, progress: 0 };
         let hedwigOwlGroup = null;
         let hedwigWingLeft = null, hedwigWingRight = null;
         let hedwigFlightState = { active: false, progress: 0, letterDropped: false };
         let isTurboMode = false;
-
-        let clock = new THREE.Clock();
-
-        // Fixed Distant Camera Base Coordinates (Optimized for Portrait Mobile Screens)
+ 
+        const clock = new THREE.Clock();
+        let elapsedT = 0;
+ 
+        // متجهات جاهزة لإعادة الاستخدام (تجنّب إنشاء كائنات كل فريم)
+        const tmpWandPos = new THREE.Vector3();
+        const tmpWandPos2 = new THREE.Vector3();
+        const tmpMouse = new THREE.Vector2();
+        const tmpDummy = new THREE.Object3D();
+        const CHIMNEY_POS = new THREE.Vector3(8.9, 5.1, 0);
+        const ringGeoShared = new THREE.RingGeometry(0.35, 0.55, 32);
+ 
         let fixedCamBasePos = new THREE.Vector3(7.5, 8.8, 32.0);
         let fixedCamTarget = new THREE.Vector3(-0.8, 6.2, 0);
         let phoneTiltOffset = { x: 0, y: 0 };
-
+ 
         let currentSpellIdx = 0;
         let autoSpellTimer = 0;
         let wizardCastAnimTimer = 0;
         let wizardSpinTimer = 0;
         let lightningFlashTimer = 0;
-
+ 
         function updateFixedDistantCameraFraming() {
             if (!camera) return;
             const aspect = window.innerWidth / window.innerHeight;
             camera.aspect = aspect;
-
-            // Portrait Mobile Composition: 3/4 Diagonal Cinema Framing so the Locomotive, Wizard, Viaduct, Castle & Sky Words stack vertically in the phone screen!
             if (aspect < 0.68) {
                 camera.fov = 53;
                 fixedCamBasePos.set(9.2, 8.6, 31.0);
@@ -1235,51 +1134,146 @@
             }
             camera.updateProjectionMatrix();
         }
-
+ 
+        /* ---------- نظام جزيئات واحد مُجمَّع (Pool) بدل إنشاء Points جديد لكل انفجار ---------- */
+        let sparkPoints, sparkPos, sparkCol, sparkBase, sparkVel, sparkAge, sparkMax;
+        let sparkNext = 0, sparkActive = false;
+        const tmpColor = new THREE.Color();
+ 
+        function initSparkPool() {
+            const N = Q.particles;
+            sparkPos = new Float32Array(N * 3);
+            sparkCol = new Float32Array(N * 3);
+            sparkBase = new Float32Array(N * 3);
+            sparkVel = new Float32Array(N * 3);
+            sparkAge = new Float32Array(N);
+            sparkMax = new Float32Array(N);
+            for (let i = 0; i < N; i++) sparkPos[i * 3 + 1] = -1000;
+ 
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3).setUsage(THREE.DynamicDrawUsage));
+            geo.setAttribute('color', new THREE.BufferAttribute(sparkCol, 3).setUsage(THREE.DynamicDrawUsage));
+            sparkPoints = new THREE.Points(geo, new THREE.PointsMaterial({
+                map: getSoftGlowTexture(),
+                size: 1.7,
+                vertexColors: true,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            }));
+            sparkPoints.frustumCulled = false;
+            scene.add(sparkPoints);
+        }
+ 
+        function spawnWandSparkBurst(origin, hexColor, count = 55) {
+            const n = Math.max(1, Math.round(count * Q.burstScale));
+            const N = Q.particles;
+            tmpColor.setHex(hexColor);
+            for (let i = 0; i < n; i++) {
+                const idx = sparkNext;
+                sparkNext = (sparkNext + 1) % N;
+                const i3 = idx * 3;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1.6 + Math.random() * 5.2;
+                sparkPos[i3] = origin.x;
+                sparkPos[i3 + 1] = origin.y;
+                sparkPos[i3 + 2] = origin.z;
+                sparkVel[i3] = -2.0 + Math.cos(angle) * speed;
+                sparkVel[i3 + 1] = 1.8 + Math.random() * 4.8;
+                sparkVel[i3 + 2] = Math.sin(angle) * speed;
+                sparkBase[i3] = tmpColor.r;
+                sparkBase[i3 + 1] = tmpColor.g;
+                sparkBase[i3 + 2] = tmpColor.b;
+                sparkCol[i3] = tmpColor.r;
+                sparkCol[i3 + 1] = tmpColor.g;
+                sparkCol[i3 + 2] = tmpColor.b;
+                sparkAge[idx] = 0;
+                sparkMax[idx] = 1.65;
+            }
+            sparkActive = true;
+        }
+ 
+        function updateSparks(dt) {
+            if (!sparkActive) return;
+            const N = Q.particles;
+            let alive = 0;
+            for (let i = 0; i < N; i++) {
+                const m = sparkMax[i];
+                if (m <= 0) continue;
+                const i3 = i * 3;
+                sparkAge[i] += dt;
+                const a = sparkAge[i];
+                if (a >= m) {
+                    sparkMax[i] = 0;
+                    sparkCol[i3] = sparkCol[i3 + 1] = sparkCol[i3 + 2] = 0;
+                    sparkPos[i3 + 1] = -1000;
+                    continue;
+                }
+                sparkVel[i3 + 1] -= 1.1 * dt;
+                sparkPos[i3] += sparkVel[i3] * dt;
+                sparkPos[i3 + 1] += sparkVel[i3 + 1] * dt;
+                sparkPos[i3 + 2] += sparkVel[i3 + 2] * dt;
+                const f = 1 - a / m;
+                sparkCol[i3] = sparkBase[i3] * f;
+                sparkCol[i3 + 1] = sparkBase[i3 + 1] * f;
+                sparkCol[i3 + 2] = sparkBase[i3 + 2] * f;
+                alive++;
+            }
+            sparkActive = alive > 0;
+            sparkPoints.geometry.attributes.position.needsUpdate = true;
+            sparkPoints.geometry.attributes.color.needsUpdate = true;
+        }
+ 
         function initMagicalTrainWorld() {
             const container = document.getElementById('webgl-container');
-
+ 
             scene = new THREE.Scene();
             scene.fog = new THREE.FogExp2(SKY_THEMES[0].fog, 0.0125);
             raycaster = new THREE.Raycaster();
-
+ 
             camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.5, 380);
             updateFixedDistantCameraFraming();
             camera.position.copy(fixedCamBasePos);
             camera.lookAt(fixedCamTarget);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+ 
+            renderer = new THREE.WebGLRenderer({
+                antialias: Q.antialias,
+                alpha: false,
+                stencil: false,
+                precision: Q.mobile ? 'mediump' : 'highp',
+                powerPreference: 'high-performance'
+            });
+            curPixelRatio = Q.pixelRatio;
+            renderer.setPixelRatio(curPixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            // الظلال مطفأة: لا يوجد أي جسم يرمي ظلاً أصلاً، فكانت تكلّف بلا أي أثر مرئي
+            renderer.shadowMap.enabled = false;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
             renderer.toneMappingExposure = 0.88;
             container.appendChild(renderer.domElement);
-
-            // Dark Moody Prisoner of Azkaban Lighting
-            const ambientLight = new THREE.AmbientLight(0x1e293b, 0.25);
+ 
+            ambientLight = new THREE.AmbientLight(0x1e293b, 0.25);
             scene.add(ambientLight);
-
-            const hemiLight = new THREE.HemisphereLight(0x334155, 0x020617, 0.34);
+ 
+            hemiLight = new THREE.HemisphereLight(0x334155, 0x020617, 0.34);
             scene.add(hemiLight);
-
+ 
             const moonDirLight = new THREE.DirectionalLight(0x94a3b8, 0.88);
             moonDirLight.position.set(-22, 42, -35);
-            moonDirLight.castShadow = true;
-            moonDirLight.shadow.mapSize.width = 1024;
-            moonDirLight.shadow.mapSize.height = 1024;
             scene.add(moonDirLight);
-
-            // Subtle Rim Light from the front so the dark train silhouette is crisp from afar
+ 
             const rimLight = new THREE.DirectionalLight(0x475569, 0.52);
             rimLight.position.set(18, 16, 35);
             scene.add(rimLight);
-
-            lightningLight = new THREE.DirectionalLight(0xe0f2fe, 0);
-            lightningLight.position.set(10, 60, -20);
-            scene.add(lightningLight);
-
+ 
+            // على الموبايل: البرق عبر رفع الإضاءة المحيطة بدل ضوء إضافي
+            if (Q.realLights) {
+                lightningLight = new THREE.DirectionalLight(0xe0f2fe, 0);
+                lightningLight.position.set(10, 60, -20);
+                scene.add(lightningLight);
+            }
+ 
+            initSparkPool();
             buildMoonlitSkyAndCastle();
             buildGlenfinnanViaductAndLake();
             buildHogwartsExpressTrain();
@@ -1287,109 +1281,115 @@
             buildFloatingHogwartsLanterns();
             buildAnimated3DPatronus();
             buildAnimatedHedwigOwl();
-
+ 
+            // تسخين الـ shaders مسبقاً حتى لا يحصل تقطيع أول مرة تظهر فيها البومة أو الغزال
+            patronus3DGroup.visible = true;
+            hedwigOwlGroup.visible = true;
+            renderer.compile(scene, camera);
+            patronus3DGroup.visible = false;
+            hedwigOwlGroup.visible = false;
+ 
             window.addEventListener('resize', onWindowResize);
             bindInteractiveSceneGestures(renderer.domElement);
+ 
+            // رسم نصوص السماء مسبقاً على دفعات خفيفة بدل الرسم أثناء العرض
+            WAND_SPELLS.forEach((_, i) => setTimeout(() => getWordTexture(i), 1200 + i * 350));
         }
-
+ 
+        function applyLightning(v) {
+            if (lightningLight) {
+                lightningLight.intensity = v;
+            } else {
+                hemiLight.intensity = 0.34 + v * 0.3;
+                ambientLight.intensity = 0.25 + v * 0.3;
+            }
+        }
+ 
         function triggerLightningFlash() {
             lightningFlashTimer = 0.42;
         }
-
-        // Build 3D Glowing Silver-Blue Patronus Spirit that leaps across the viaduct
+ 
         function buildAnimated3DPatronus() {
             patronus3DGroup = new THREE.Group();
             patronus3DGroup.visible = false;
-
+ 
             const patronusMat = new THREE.MeshBasicMaterial({
-                color: 0x7dd3fc,
-                transparent: true,
-                opacity: 0.88,
-                blending: THREE.AdditiveBlending
+                color: 0x7dd3fc, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending
             });
-
-            // Stag / Spirit Body
-            const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.26, 1.5, 12), patronusMat);
+            const sg = S(10);
+ 
+            const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.26, 1.5, sg), patronusMat);
             torso.rotation.z = Math.PI / 2;
             patronus3DGroup.add(torso);
-
-            // Neck & Head
-            const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.26, 0.95, 10), patronusMat);
+ 
+            const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.26, 0.95, sg), patronusMat);
             neck.position.set(0.68, 0.55, 0);
             neck.rotation.z = -0.45;
             patronus3DGroup.add(neck);
-
-            const head = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.65, 10), patronusMat);
+ 
+            const head = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.65, sg), patronusMat);
             head.position.set(0.98, 0.96, 0);
             head.rotation.z = -1.25;
             patronus3DGroup.add(head);
-
-            // Majestic Glowing Antlers
+ 
+            const antlerGeo = new THREE.CylinderGeometry(0.03, 0.05, 0.95, 6);
+            const branchGeo = new THREE.CylinderGeometry(0.02, 0.04, 0.55, 6);
             [-0.18, 0.18].forEach(zSide => {
-                const antlerMain = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.95, 8), patronusMat);
+                const antlerMain = new THREE.Mesh(antlerGeo, patronusMat);
                 antlerMain.position.set(0.75, 1.42, zSide);
                 antlerMain.rotation.z = 0.35;
                 antlerMain.rotation.x = zSide * 1.2;
                 patronus3DGroup.add(antlerMain);
-
-                const antlerBranch = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.04, 0.55, 8), patronusMat);
+ 
+                const antlerBranch = new THREE.Mesh(branchGeo, patronusMat);
                 antlerBranch.position.set(0.88, 1.55, zSide * 1.4);
                 antlerBranch.rotation.z = -0.4;
                 patronus3DGroup.add(antlerBranch);
             });
-
-            // Leaping Legs
-            const frontLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.04, 1.0, 8), patronusMat);
+ 
+            const frontLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.04, 1.0, 6), patronusMat);
             frontLeg.position.set(0.75, -0.45, 0.12);
             frontLeg.rotation.z = -0.65;
             patronus3DGroup.add(frontLeg);
-
-            const backLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.04, 1.05, 8), patronusMat);
+ 
+            const backLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.04, 1.05, 6), patronusMat);
             backLeg.position.set(-0.78, -0.42, -0.12);
             backLeg.rotation.z = 0.72;
             patronus3DGroup.add(backLeg);
-
-            // Aura Sprites & PointLight
+ 
             patronus3DGroup.add(makeGlowSprite(0x38bdf8, 6.5, 0.95));
             patronus3DGroup.add(makeGlowSprite(0xffffff, 3.2, 1.0));
-            const pLight = new THREE.PointLight(0x38bdf8, 4.5, 22);
-            patronus3DGroup.add(pLight);
-
+            // لا PointLight هنا: إظهار/إخفاء ضوء يغيّر عدد الأضواء ويُعيد بناء الـ shaders (تقطيع)
+ 
             patronus3DGroup.scale.set(1.35, 1.35, 1.35);
             scene.add(patronus3DGroup);
         }
-
-        // Build 3D Snowy Owl (Hedwig) carrying a Golden Sealed Letter for Shadia
+ 
         function buildAnimatedHedwigOwl() {
             hedwigOwlGroup = new THREE.Group();
             hedwigOwlGroup.visible = false;
-
+ 
             const snowMat = new THREE.MeshStandardMaterial({
-                color: 0xf8fafc,
-                roughness: 0.4,
-                emissive: 0x38bdf8,
-                emissiveIntensity: 0.25
+                color: 0xf8fafc, roughness: 0.4, emissive: 0x38bdf8, emissiveIntensity: 0.25
             });
-
-            const body = new THREE.Mesh(new THREE.SphereGeometry(0.38, 14, 14), snowMat);
+ 
+            const body = new THREE.Mesh(new THREE.SphereGeometry(0.38, S(14), S(14)), snowMat);
             body.scale.set(1.4, 0.85, 0.85);
             hedwigOwlGroup.add(body);
-
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 12), snowMat);
+ 
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.26, S(12), S(12)), snowMat);
             head.position.set(0.42, 0.18, 0);
             hedwigOwlGroup.add(head);
-
-            // Flapping Wings
+ 
             const wingGeo = new THREE.BoxGeometry(0.65, 0.06, 1.45);
             hedwigWingLeft = new THREE.Mesh(wingGeo, snowMat);
             hedwigWingLeft.position.set(0, 0.1, 0.65);
             hedwigOwlGroup.add(hedwigWingLeft);
-
+ 
             hedwigWingRight = new THREE.Mesh(wingGeo, snowMat);
             hedwigWingRight.position.set(0, 0.1, -0.65);
             hedwigOwlGroup.add(hedwigWingRight);
-
-            // Glowing Hogwarts Envelope in claws
+ 
             const letterMesh = new THREE.Mesh(
                 new THREE.BoxGeometry(0.55, 0.38, 0.06),
                 new THREE.MeshBasicMaterial({ color: 0xfef08a })
@@ -1397,12 +1397,12 @@
             letterMesh.position.set(0.1, -0.38, 0);
             letterMesh.rotation.z = 0.2;
             hedwigOwlGroup.add(letterMesh);
-
+ 
             hedwigOwlGroup.add(makeGlowSprite(0xfde047, 3.8, 0.8));
             hedwigOwlGroup.scale.set(1.45, 1.45, 1.45);
             scene.add(hedwigOwlGroup);
         }
-
+ 
         function trigger3DPatronusLeap() {
             patronusFlightState.active = true;
             patronusFlightState.progress = 0;
@@ -1412,7 +1412,7 @@
             castShadiaSpellByIndex(1, true);
             showMagicToast('🦌 طيف الغزال الفضي (إكسبكتو باترونوم) يقفز فوق قطار شادية!');
         }
-
+ 
         function triggerHedwigOwlDelivery() {
             hedwigFlightState.active = true;
             hedwigFlightState.progress = 0;
@@ -1421,29 +1421,26 @@
             soundMagic.playWandSpellChime();
             showMagicToast('🦉 بومة هوجورتس البيضاء تحلّق حاملةً رسالة من قيس جازي إلى شادية!');
         }
-
+ 
         function spawnExpandingMagicRing(originVec, hexColor) {
-            const ringGeo = new THREE.RingGeometry(0.35, 0.55, 32);
+            if (expandingMagicRings.length > 14) return;
             const ringMat = new THREE.MeshBasicMaterial({
-                color: hexColor,
-                side: THREE.DoubleSide,
-                transparent: true,
-                opacity: 0.92,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
+                color: hexColor, side: THREE.DoubleSide, transparent: true,
+                opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false
             });
-            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+            const ringMesh = new THREE.Mesh(ringGeoShared, ringMat);
             ringMesh.position.copy(originVec);
             ringMesh.lookAt(camera.position);
             scene.add(ringMesh);
             expandingMagicRings.push({ mesh: ringMesh, age: 0, maxAge: 1.35 });
         }
-
+ 
         function spawnWindowHeartLanterns() {
-            const coachPositions = [-11.2, -20.8];
-            coachPositions.forEach(cx => {
-                for (let i = -1; i <= 1; i++) {
-                    const lantern = makeGlowSprite(0xfbbf24, 2.2, 0.95);
+            if (windowHeartLanterns.length > 12) return;
+            const range = Q.mobile ? [0] : [-1, 0, 1];
+            [-11.2, -20.8].forEach(cx => {
+                range.forEach(i => {
+                    const lantern = makeGlowSprite(0xfbbf24, 2.2, 0.95, false);
                     lantern.position.set(cx + i * 2.2, 2.9, 1.6);
                     scene.add(lantern);
                     windowHeartLanterns.push({
@@ -1451,13 +1448,12 @@
                         vx: -1.5 + (Math.random() - 0.5) * 1.5,
                         vy: 2.2 + Math.random() * 1.8,
                         vz: 0.6 + Math.random() * 1.2,
-                        age: 0,
-                        maxAge: 2.8
+                        age: 0, maxAge: 2.8
                     });
-                }
+                });
             });
         }
-
+ 
         function launchCastleFireworks() {
             soundMagic.playWandSpellChime();
             triggerLightningFlash();
@@ -1475,21 +1471,18 @@
             }
             showMagicToast('🎇 ألعاب هوجورتس النارية تضيء أبراج القلعة باسم شادية!');
         }
-
+ 
         function buildMoonlitSkyAndCastle() {
-            const skyGeo = new THREE.SphereGeometry(220, 32, 32);
             const skyMat = new THREE.MeshBasicMaterial({
                 map: createSkyGradientTexture(SKY_THEMES[0].top, SKY_THEMES[0].mid, SKY_THEMES[0].bot),
-                side: THREE.BackSide,
-                fog: false
+                side: THREE.BackSide, fog: false
             });
-            skyDome = new THREE.Mesh(skyGeo, skyMat);
+            skyDome = new THREE.Mesh(new THREE.SphereGeometry(220, S(32), S(32)), skyMat);
             scene.add(skyDome);
-
-            // Distant Stars
+ 
             const starGeo = new THREE.BufferGeometry();
-            const starPos = new Float32Array(600 * 3);
-            for (let i = 0; i < 600; i++) {
+            const starPos = new Float32Array(Q.stars * 3);
+            for (let i = 0; i < Q.stars; i++) {
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.random() * Math.PI * 0.45;
                 const r = 185 + Math.random() * 20;
@@ -1499,42 +1492,31 @@
             }
             starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
             scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
-                color: 0xcbd5e1,
-                size: 0.9,
-                transparent: true,
-                opacity: 0.45,
-                fog: false
+                color: 0xcbd5e1, size: 0.9, transparent: true, opacity: 0.45, fog: false
             })));
-
-            // Full Cold Moon behind storm clouds (Positioned cleanly to the upper right of the castle)
+ 
             const moon = new THREE.Mesh(
-                new THREE.SphereGeometry(8.5, 32, 32),
+                new THREE.SphereGeometry(8.5, S(32), S(32)),
                 new THREE.MeshBasicMaterial({ color: 0xe2e8f0, fog: false })
             );
             moon.position.set(22, 28, -88);
             moon.add(makeGlowSprite(0x94a3b8, 44, 0.35));
             scene.add(moon);
-
-            // Dark Storm Clouds
-            for (let c = 0; c < 10; c++) {
-                const cloudSprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                    map: getVolumetricSteamTexture(),
-                    color: 0x0b1324,
-                    transparent: true,
-                    opacity: 0.72,
-                    fog: false
-                }));
-                cloudSprite.position.set(-42 + c * 9.5, 25 + (c % 3) * 3.5, -75 - (c % 2) * 5);
+ 
+            // سحب العاصفة: مادة واحدة مشتركة
+            const cloudMat = new THREE.SpriteMaterial({
+                map: getVolumetricSteamTexture(), color: 0x0b1324,
+                transparent: true, opacity: 0.72, fog: false
+            });
+            for (let c = 0; c < Q.clouds; c++) {
+                const step = 95 / Math.max(1, Q.clouds - 1);
+                const cloudSprite = new THREE.Sprite(cloudMat);
+                cloudSprite.position.set(-42 + c * step, 25 + (c % 3) * 3.5, -75 - (c % 2) * 5);
                 cloudSprite.scale.set(28, 12, 1);
                 scene.add(cloudSprite);
             }
-
-            // Scottish Highland Mountain Range Silhouette
-            const mountainMat = new THREE.MeshStandardMaterial({
-                color: 0x04070f,
-                roughness: 0.95,
-                metalness: 0.05
-            });
+ 
+            const mountainMat = new THREE.MeshStandardMaterial({ color: 0x04070f, roughness: 0.95, metalness: 0.05 });
             for (let m = -4; m <= 4; m++) {
                 const peak = new THREE.Mesh(
                     new THREE.ConeGeometry(28 + Math.abs(m) * 4, 38 + (m % 2) * 10, 6),
@@ -1544,353 +1526,384 @@
                 peak.rotation.y = m * 0.7;
                 scene.add(peak);
             }
-
-            // Gothic Hogwarts Castle Silhouette framed in the distant left background
+ 
             const castleGroup = new THREE.Group();
             castleGroup.position.set(-18, 6, -68);
             castleGroupRef = castleGroup;
-
+ 
             const cliff = new THREE.Mesh(
                 new THREE.ConeGeometry(22, 26, 7),
                 new THREE.MeshStandardMaterial({ color: 0x060911, roughness: 0.95 })
             );
             cliff.position.y = -4;
             castleGroup.add(cliff);
-
-            const darkStoneMat = new THREE.MeshStandardMaterial({
-                color: 0x0d121d,
-                roughness: 0.9,
-                bumpMap: getWetStoneTexture(),
-                bumpScale: 0.15
-            });
-            const slateRoofMat = new THREE.MeshStandardMaterial({
-                color: 0x070a12,
-                roughness: 0.7,
-                metalness: 0.3
-            });
-
+ 
+            const stoneParams = { color: 0x0d121d, roughness: 0.9 };
+            if (Q.bump) { stoneParams.bumpMap = getWetStoneTexture(); stoneParams.bumpScale = 0.15; }
+            const darkStoneMat = new THREE.MeshStandardMaterial(stoneParams);
+            const slateRoofMat = new THREE.MeshStandardMaterial({ color: 0x070a12, roughness: 0.7, metalness: 0.3 });
+ 
             const towerConfigs = [
-                { x: 0, y: 14, z: 0, r: 2.9, h: 19 },
-                { x: -4.8, y: 11, z: 2, r: 2.0, h: 14 },
-                { x: 4.8, y: 12, z: -1, r: 2.2, h: 16 },
-                { x: -8.5, y: 9, z: -2, r: 1.6, h: 11 },
-                { x: 8.2, y: 9.5, z: 2, r: 1.7, h: 12 },
-                { x: -2.2, y: 10, z: 3.5, r: 3.8, h: 9 }
+                { x: 0, y: 14, z: 0, r: 2.9, h: 19 }, { x: -4.8, y: 11, z: 2, r: 2.0, h: 14 },
+                { x: 4.8, y: 12, z: -1, r: 2.2, h: 16 }, { x: -8.5, y: 9, z: -2, r: 1.6, h: 11 },
+                { x: 8.2, y: 9.5, z: 2, r: 1.7, h: 12 }, { x: -2.2, y: 10, z: 3.5, r: 3.8, h: 9 }
             ];
+            const winPerTower = Q.mobile ? 1 : 3;
             towerConfigs.forEach(t => {
-                const tower = new THREE.Mesh(new THREE.CylinderGeometry(t.r, t.r * 1.08, t.h, 12), darkStoneMat);
+                const tower = new THREE.Mesh(new THREE.CylinderGeometry(t.r, t.r * 1.08, t.h, S(12)), darkStoneMat);
                 tower.position.set(t.x, t.y, t.z);
                 castleGroup.add(tower);
-
-                const roof = new THREE.Mesh(new THREE.ConeGeometry(t.r * 1.2, t.h * 0.48, 12), slateRoofMat);
+ 
+                const roof = new THREE.Mesh(new THREE.ConeGeometry(t.r * 1.2, t.h * 0.48, S(12)), slateRoofMat);
                 roof.position.set(t.x, t.y + t.h / 2 + t.h * 0.22, t.z);
                 castleGroup.add(roof);
-
-                for (let w = 0; w < 3; w++) {
+ 
+                for (let w = 0; w < winPerTower; w++) {
                     const winGlow = makeGlowSprite(0xf59e0b, 1.8, 0.85);
-                    winGlow.position.set(t.x + (w - 1) * 0.6, t.y + (w - 1) * 2.5, t.z + t.r + 0.1);
+                    const wi = Q.mobile ? 1 : w;
+                    winGlow.position.set(t.x + (wi - 1) * 0.6, t.y + (wi - 1) * 2.5, t.z + t.r + 0.1);
                     castleGroup.add(winGlow);
                 }
             });
-
+ 
             scene.add(castleGroup);
         }
-
+ 
         function buildGlenfinnanViaductAndLake() {
             const lake = new THREE.Mesh(
                 new THREE.PlaneGeometry(320, 220),
-                new THREE.MeshStandardMaterial({
-                    color: 0x020409,
-                    roughness: 0.08,
-                    metalness: 0.92
-                })
+                new THREE.MeshStandardMaterial({ color: 0x020409, roughness: 0.08, metalness: 0.92 })
             );
             lake.rotation.x = -Math.PI / 2;
             lake.position.set(0, -14, 0);
             scene.add(lake);
-
-            // Glowing Shimmering Reflections on the Black Lake water
+ 
             for (let r = -3; r <= 3; r++) {
-                const ripple = makeGlowSprite(0xf59e0b, 6.5, 0.25);
+                if (Q.mobile && r % 2 === 0) continue;
+                const ripple = makeGlowSprite(0xf59e0b, 6.5, 0.25, false);
                 ripple.position.set(r * 6.5, -13.6, 5 + (r % 2) * 3);
                 ripple.scale.set(9.5, 2.2, 1);
                 scene.add(ripple);
                 lakeLightRipples.push({ sprite: ripple, baseX: r * 6.5, phase: r * 1.1 });
             }
-
+ 
             const stoneTex = getWetStoneTexture();
-            const stoneMat = new THREE.MeshStandardMaterial({
-                map: stoneTex,
-                bumpMap: stoneTex,
-                bumpScale: 0.28,
-                color: 0x475569,
-                roughness: 0.62,
-                metalness: 0.18
-            });
-
+            const stoneParams = { map: stoneTex, color: 0x475569, roughness: 0.62, metalness: 0.18 };
+            if (Q.bump) { stoneParams.bumpMap = stoneTex; stoneParams.bumpScale = 0.28; }
+            const stoneMat = new THREE.MeshStandardMaterial(stoneParams);
+ 
             const bridgeDeck = new THREE.Mesh(new THREE.BoxGeometry(220, 1.4, 5.2), stoneMat);
             bridgeDeck.position.set(0, -0.7, 0);
-            bridgeDeck.receiveShadow = true;
             scene.add(bridgeDeck);
-
+ 
+            const parapetGeo = new THREE.BoxGeometry(220, 0.72, 0.38);
             [-2.4, 2.4].forEach(zSide => {
-                const parapet = new THREE.Mesh(new THREE.BoxGeometry(220, 0.72, 0.38), stoneMat);
+                const parapet = new THREE.Mesh(parapetGeo, stoneMat);
                 parapet.position.set(0, 0.36, zSide);
                 scene.add(parapet);
             });
-
-            const railMat = new THREE.MeshStandardMaterial({
-                color: 0x94a3b8,
-                metalness: 0.95,
-                roughness: 0.15
-            });
+ 
+            const railMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.95, roughness: 0.15 });
+            const railGeo = new THREE.BoxGeometry(220, 0.18, 0.12);
             [-0.85, 0.85].forEach(zRail => {
-                const rail = new THREE.Mesh(new THREE.BoxGeometry(220, 0.18, 0.12), railMat);
+                const rail = new THREE.Mesh(railGeo, railMat);
                 rail.position.set(0, 0.16, zRail);
                 scene.add(rail);
             });
-
-            const sleeperMat = new THREE.MeshStandardMaterial({ color: 0x160f0a, roughness: 0.92 });
-            for (let x = -70; x <= 70; x += 1.25) {
-                const tie = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.12, 2.5), sleeperMat);
-                tie.position.set(x, 0.08, 0);
-                scene.add(tie);
-                scrollingRailSleepers.push(tie);
-            }
-
-            for (let x = -90; x <= 90; x += 12) {
+ 
+            // العوارض: Mesh واحد (InstancedMesh) بدل ~113 جسم، والتمرير بتحريك المجموعة كلها بنمط دوري
+            const SLEEPER_STEP = 1.25;
+            const sleeperXs = [];
+            for (let x = -70; x <= 70; x += SLEEPER_STEP) sleeperXs.push(x);
+            const sleepers = new THREE.InstancedMesh(
+                new THREE.BoxGeometry(0.42, 0.12, 2.5),
+                new THREE.MeshStandardMaterial({ color: 0x160f0a, roughness: 0.92 }),
+                sleeperXs.length
+            );
+            sleeperXs.forEach((x, i) => {
+                tmpDummy.position.set(x, 0.08, 0);
+                tmpDummy.updateMatrix();
+                sleepers.setMatrixAt(i, tmpDummy.matrix);
+            });
+            sleepers.frustumCulled = false;
+            sleepersRoot = new THREE.Group();
+            sleepersRoot.add(sleepers);
+            scene.add(sleepersRoot);
+ 
+            // الأعمدة: هندسة مشتركة + مجموعة واحدة تتحرك بنمط دوري كل 12 وحدة
+            const columnGeo = new THREE.BoxGeometry(2.8, 15, 4.8);
+            const archGeo = new THREE.CylinderGeometry(4.6, 4.6, 4.6, S(18), 1, false, 0, Math.PI);
+            const mistMat = new THREE.SpriteMaterial({
+                map: getVolumetricSteamTexture(), color: 0x1e293b,
+                transparent: true, opacity: 0.38, depthWrite: false
+            });
+            pillarsRoot = new THREE.Group();
+            let pIdx = 0;
+            for (let x = -Q.pillarRange; x <= Q.pillarRange; x += 12) {
                 const pillarGroup = new THREE.Group();
                 pillarGroup.position.set(x, 0, 0);
-
-                const column = new THREE.Mesh(new THREE.BoxGeometry(2.8, 15, 4.8), stoneMat);
+ 
+                const column = new THREE.Mesh(columnGeo, stoneMat);
                 column.position.y = -8.2;
                 pillarGroup.add(column);
-
-                const archBlock = new THREE.Mesh(
-                    new THREE.CylinderGeometry(4.6, 4.6, 4.6, 18, 1, false, 0, Math.PI),
-                    stoneMat
-                );
+ 
+                const archBlock = new THREE.Mesh(archGeo, stoneMat);
                 archBlock.rotation.x = Math.PI / 2;
                 archBlock.position.set(6, -3.2, 0);
                 pillarGroup.add(archBlock);
-
-                const mistSprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                    map: getVolumetricSteamTexture(),
-                    color: 0x1e293b,
-                    transparent: true,
-                    opacity: 0.38,
-                    depthWrite: false
-                }));
-                mistSprite.position.set(3, -11.5, 2.5);
-                mistSprite.scale.set(18, 7, 1);
-                pillarGroup.add(mistSprite);
-
-                scene.add(pillarGroup);
-                scrollingBridgePillars.push(pillarGroup);
-            }
-
-            const pineMat = new THREE.MeshStandardMaterial({ color: 0x050c09, roughness: 0.95 });
-            for (let i = 0; i < 28; i++) {
-                const tree = new THREE.Group();
-                const zBank = i % 2 === 0 ? -15 - Math.random() * 22 : 15 + Math.random() * 14;
-                tree.position.set(-88 + i * 6.4, -14, zBank);
-
-                for (let tier = 0; tier < 3; tier++) {
-                    const cone = new THREE.Mesh(
-                        new THREE.ConeGeometry(2.6 - tier * 0.55, 5.2, 7),
-                        pineMat
-                    );
-                    cone.position.y = 3.0 + tier * 2.4;
-                    tree.add(cone);
+ 
+                if (!Q.mobile || pIdx % 3 === 0) {
+                    const mistSprite = new THREE.Sprite(mistMat);
+                    mistSprite.position.set(3, -11.5, 2.5);
+                    mistSprite.scale.set(18, 7, 1);
+                    pillarGroup.add(mistSprite);
                 }
-
-                scene.add(tree);
-                scrollingTrees.push(tree);
+                pillarsRoot.add(pillarGroup);
+                pIdx++;
+            }
+            scene.add(pillarsRoot);
+ 
+            // الأشجار: 3 InstancedMesh (واحد لكل طابق) بدل 84 جسماً منفصلاً
+            const pineMat = new THREE.MeshStandardMaterial({ color: 0x050c09, roughness: 0.95 });
+            const treeCount = Q.trees;
+            const spacing = 180 / treeCount;
+            for (let i = 0; i < treeCount; i++) {
+                const zBank = i % 2 === 0 ? -15 - Math.random() * 22 : 15 + Math.random() * 14;
+                treeData.push({ x: -88 + i * spacing, z: zBank });
+            }
+            for (let tier = 0; tier < 3; tier++) {
+                const inst = new THREE.InstancedMesh(
+                    new THREE.ConeGeometry(2.6 - tier * 0.55, 5.2, 7),
+                    pineMat, treeCount
+                );
+                inst.frustumCulled = false;
+                inst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+                scene.add(inst);
+                treeInstances.push(inst);
+            }
+            updateTreeMatrices();
+        }
+ 
+        function updateTreeMatrices() {
+            for (let tier = 0; tier < 3; tier++) {
+                const inst = treeInstances[tier];
+                for (let i = 0; i < treeData.length; i++) {
+                    tmpDummy.position.set(treeData[i].x, -14 + 3.0 + tier * 2.4, treeData[i].z);
+                    tmpDummy.updateMatrix();
+                    inst.setMatrixAt(i, tmpDummy.matrix);
+                }
+                inst.instanceMatrix.needsUpdate = true;
             }
         }
-
+ 
+        /* عجلة واحدة مدموجة (إطار + حافة + أضلاع) بمادتين = Draw call أقل بكثير */
+        const wheelGeoCache = {};
+        function getWheelGeometry(radius) {
+            if (wheelGeoCache[radius]) return wheelGeoCache[radius];
+            const tire = new THREE.CylinderGeometry(radius, radius, 0.22, S(24));
+            tire.rotateX(Math.PI / 2);
+            const parts = [new THREE.TorusGeometry(radius * 0.88, 0.045, 6, S(24))];
+            const n = Q.mobile ? 3 : 6;
+            for (let i = 0; i < n; i++) {
+                const sp = new THREE.BoxGeometry(radius * 1.75, 0.06, 0.24);
+                sp.rotateZ((i / n) * Math.PI);
+                parts.push(sp);
+            }
+            const U = THREE.BufferGeometryUtils;
+            if (U && U.mergeBufferGeometries) {
+                const spokes = U.mergeBufferGeometries(parts, false);
+                wheelGeoCache[radius] = U.mergeBufferGeometries([tire, spokes], true);
+            } else {
+                wheelGeoCache[radius] = { fallback: true, tire, parts };
+            }
+            return wheelGeoCache[radius];
+        }
+ 
+        function createTrainWheel(radius, tireMat, spokeMat) {
+            const geo = getWheelGeometry(radius);
+            if (geo.isBufferGeometry) return new THREE.Mesh(geo, [tireMat, spokeMat]);
+            const wg = new THREE.Group();
+            wg.add(new THREE.Mesh(geo.tire, tireMat));
+            geo.parts.forEach(p => wg.add(new THREE.Mesh(p, spokeMat)));
+            return wg;
+        }
+ 
         function buildHogwartsExpressTrain() {
             trainMasterGroup = new THREE.Group();
             scene.add(trainMasterGroup);
-
-            const ironBump = getWeatheredIronTexture();
+ 
+            const ironParams = { bumpMap: null, bumpScale: 0.03 };
+            if (Q.bump) ironParams.bumpMap = getWeatheredIronTexture();
             const scarletMat = new THREE.MeshStandardMaterial({
-                color: 0x6b0909,
-                bumpMap: ironBump,
-                bumpScale: 0.025,
-                roughness: 0.32,
-                metalness: 0.58
+                color: 0x6b0909, roughness: 0.32, metalness: 0.58,
+                ...(Q.bump ? { bumpMap: ironParams.bumpMap, bumpScale: 0.025 } : {})
             });
             const blackIronMat = new THREE.MeshStandardMaterial({
-                color: 0x0a0d12,
-                bumpMap: ironBump,
-                bumpScale: 0.04,
-                roughness: 0.42,
-                metalness: 0.78
+                color: 0x0a0d12, roughness: 0.42, metalness: 0.78,
+                ...(Q.bump ? { bumpMap: ironParams.bumpMap, bumpScale: 0.04 } : {})
             });
-            const goldBrassMat = new THREE.MeshStandardMaterial({
-                color: 0xc28e2e,
-                roughness: 0.25,
-                metalness: 0.92
-            });
+            const goldBrassMat = new THREE.MeshStandardMaterial({ color: 0xc28e2e, roughness: 0.25, metalness: 0.92 });
             const warmWindowMat = new THREE.MeshBasicMaterial({ color: 0xffd27d });
-
-            // A. OLTON HALL 5972 STEAM LOCOMOTIVE
+ 
+            // A. القاطرة
             const loco = new THREE.Group();
             trainMasterGroup.add(loco);
-
+ 
             const runningBoard = new THREE.Mesh(new THREE.BoxGeometry(10.6, 0.32, 2.75), scarletMat);
             runningBoard.position.set(5.2, 1.35, 0);
             loco.add(runningBoard);
-
+ 
             const underframe = new THREE.Mesh(new THREE.BoxGeometry(9.9, 0.75, 2.05), blackIronMat);
             underframe.position.set(5.0, 0.88, 0);
             loco.add(underframe);
-
-            const boiler = new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.22, 6.0, 32), scarletMat);
+ 
+            const boiler = new THREE.Mesh(new THREE.CylinderGeometry(1.16, 1.22, 6.0, S(32)), scarletMat);
             boiler.rotation.z = Math.PI / 2;
             boiler.position.set(4.8, 2.78, 0);
             loco.add(boiler);
-
+ 
+            const bandGeo = new THREE.CylinderGeometry(1.23, 1.23, 0.09, S(32));
             [2.4, 3.9, 5.4, 6.9].forEach(xBand => {
-                const band = new THREE.Mesh(new THREE.CylinderGeometry(1.23, 1.23, 0.09, 32), goldBrassMat);
+                const band = new THREE.Mesh(bandGeo, goldBrassMat);
                 band.rotation.z = Math.PI / 2;
                 band.position.set(xBand, 2.78, 0);
                 loco.add(band);
             });
-
-            const steamDome = new THREE.Mesh(new THREE.SphereGeometry(0.48, 20, 16), goldBrassMat);
+ 
+            const steamDome = new THREE.Mesh(new THREE.SphereGeometry(0.48, S(20), S(16)), goldBrassMat);
             steamDome.position.set(4.7, 3.98, 0);
             loco.add(steamDome);
-
-            const smokebox = new THREE.Mesh(new THREE.CylinderGeometry(1.23, 1.23, 2.15, 32), blackIronMat);
+ 
+            const smokebox = new THREE.Mesh(new THREE.CylinderGeometry(1.23, 1.23, 2.15, S(32)), blackIronMat);
             smokebox.rotation.z = Math.PI / 2;
             smokebox.position.set(8.8, 2.78, 0);
             loco.add(smokebox);
-
+ 
             const smokeDoor = new THREE.Mesh(
-                new THREE.SphereGeometry(1.16, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.35),
+                new THREE.SphereGeometry(1.16, S(24), S(16), 0, Math.PI * 2, 0, Math.PI * 0.35),
                 blackIronMat
             );
             smokeDoor.rotation.z = -Math.PI / 2;
             smokeDoor.position.set(9.46, 2.78, 0);
             loco.add(smokeDoor);
-
+ 
+            const cylGeo = new THREE.CylinderGeometry(0.38, 0.38, 1.55, S(18));
             [-1.32, 1.32].forEach(cz => {
-                const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 1.55, 18), blackIronMat);
+                const cyl = new THREE.Mesh(cylGeo, blackIronMat);
                 cyl.rotation.z = Math.PI / 2;
                 cyl.position.set(8.35, 1.05, cz);
                 loco.add(cyl);
             });
-
-            const chimney = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.32, 1.35, 20), blackIronMat);
+ 
+            const chimney = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.32, 1.35, S(20)), blackIronMat);
             chimney.position.set(8.9, 4.35, 0);
             loco.add(chimney);
-
-            const chimneyLip = new THREE.Mesh(new THREE.TorusGeometry(0.39, 0.055, 12, 24), goldBrassMat);
+ 
+            const chimneyLip = new THREE.Mesh(new THREE.TorusGeometry(0.39, 0.055, 8, S(24)), goldBrassMat);
             chimneyLip.rotation.x = Math.PI / 2;
             chimneyLip.position.set(8.9, 5.0, 0);
             loco.add(chimneyLip);
-
-            // Headlamp & Volumetric Cone cutting through the dark fog
+ 
             const headlampGlow = makeGlowSprite(0xfffbeb, 4.2, 0.95);
             headlampGlow.position.set(10.32, 2.05, 0);
             loco.add(headlampGlow);
-
-            const locoSpotLight = new THREE.SpotLight(0xffdfa0, 4.5, 75, Math.PI / 5, 0.65, 1.5);
-            locoSpotLight.position.set(10.2, 2.05, 0);
-            locoSpotLight.target.position.set(35, 0.5, 0);
-            loco.add(locoSpotLight);
-            loco.add(locoSpotLight.target);
-
+ 
+            // SpotLight حقيقي على الكمبيوتر فقط
+            if (Q.realLights) {
+                const locoSpotLight = new THREE.SpotLight(0xffdfa0, 4.5, 75, Math.PI / 5, 0.65, 1.5);
+                locoSpotLight.position.set(10.2, 2.05, 0);
+                locoSpotLight.target.position.set(35, 0.5, 0);
+                loco.add(locoSpotLight);
+                loco.add(locoSpotLight.target);
+            }
+ 
             const beamCone = new THREE.Mesh(
-                new THREE.ConeGeometry(3.6, 19, 24, 1, true),
+                new THREE.ConeGeometry(3.6, 19, S(24), 1, true),
                 new THREE.MeshBasicMaterial({
-                    color: 0xfde68a,
-                    transparent: true,
-                    opacity: 0.09,
-                    side: THREE.DoubleSide,
-                    depthWrite: false,
-                    blending: THREE.AdditiveBlending
+                    color: 0xfde68a, transparent: true, opacity: 0.09,
+                    side: Q.mobile ? THREE.FrontSide : THREE.DoubleSide,
+                    depthWrite: false, blending: THREE.AdditiveBlending
                 })
             );
             beamCone.rotation.z = Math.PI / 2;
             beamCone.position.set(19.5, 1.75, 0);
             loco.add(beamCone);
-
+ 
             const cabBody = new THREE.Mesh(new THREE.BoxGeometry(2.35, 2.65, 2.65), scarletMat);
             cabBody.position.set(1.1, 2.82, 0);
             loco.add(cabBody);
-
+ 
             const cabRoof = new THREE.Mesh(
-                new THREE.CylinderGeometry(1.48, 1.48, 2.55, 20, 1, false, -Math.PI * 0.35, Math.PI * 0.7),
+                new THREE.CylinderGeometry(1.48, 1.48, 2.55, S(20), 1, false, -Math.PI * 0.35, Math.PI * 0.7),
                 blackIronMat
             );
             cabRoof.rotation.z = Math.PI / 2;
             cabRoof.position.set(1.1, 3.12, 0);
             loco.add(cabRoof);
-
-            fireboxLight = new THREE.PointLight(0xff4500, 2.8, 9);
-            fireboxLight.position.set(1.1, 2.8, 0);
-            loco.add(fireboxLight);
-
+ 
+            if (Q.realLights) {
+                fireboxLight = new THREE.PointLight(0xff4500, 2.8, 9);
+                fireboxLight.position.set(1.1, 2.8, 0);
+                loco.add(fireboxLight);
+            }
+ 
             const cabFireGlow = makeGlowSprite(0xff5500, 3.2, 0.75);
             cabFireGlow.position.set(1.1, 3.1, 0);
             loco.add(cabFireGlow);
-
+ 
             const plateTex = createLocomotiveNameplateTexture("قطار شادية السحري • 5972");
+            const plateGeo = new THREE.PlaneGeometry(4.0, 0.75);
+            const plateMat = new THREE.MeshBasicMaterial({ map: plateTex, side: THREE.DoubleSide });
             [-1.25, 1.25].forEach(zSide => {
-                const plate = new THREE.Mesh(
-                    new THREE.PlaneGeometry(4.0, 0.75),
-                    new THREE.MeshBasicMaterial({ map: plateTex, side: THREE.DoubleSide })
-                );
+                const plate = new THREE.Mesh(plateGeo, plateMat);
                 plate.position.set(5.0, 2.85, zSide);
                 if (zSide < 0) plate.rotation.y = Math.PI;
                 loco.add(plate);
             });
-
+ 
             [2.0, 4.1, 6.2].forEach(wx => {
                 [-1.18, 1.18].forEach(wz => {
-                    const wGroup = createTrainWheel(0.92, scarletMat, goldBrassMat);
-                    wGroup.position.set(wx, 0.92, wz);
-                    loco.add(wGroup);
-                    trainWheels.push(wGroup);
+                    const w = createTrainWheel(0.92, scarletMat, goldBrassMat);
+                    w.position.set(wx, 0.92, wz);
+                    loco.add(w);
+                    trainWheels.push(w);
                 });
             });
-
+ 
             [8.2, 9.6].forEach(wx => {
                 [-1.12, 1.12].forEach(wz => {
-                    const wGroup = createTrainWheel(0.50, blackIronMat, goldBrassMat);
-                    wGroup.position.set(wx, 0.50, wz);
-                    loco.add(wGroup);
-                    trainWheels.push(wGroup);
+                    const w = createTrainWheel(0.50, blackIronMat, goldBrassMat);
+                    w.position.set(wx, 0.50, wz);
+                    loco.add(w);
+                    trainWheels.push(w);
                 });
             });
-
+ 
+            const rodGeo = new THREE.BoxGeometry(5.2, 0.14, 0.07);
             [-1.32, 1.32].forEach(rz => {
-                const rod = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.14, 0.07), goldBrassMat);
+                const rod = new THREE.Mesh(rodGeo, goldBrassMat);
                 rod.position.set(4.1, 0.92, rz);
                 loco.add(rod);
                 connectingRods.push({ mesh: rod, baseZ: rz });
             });
-
-            // B. COAL TENDER CAR
+ 
+            // B. التندر
             const tender = new THREE.Group();
             tender.position.set(-2.9, 0, 0);
             trainMasterGroup.add(tender);
-
+ 
             const tenderBody = new THREE.Mesh(new THREE.BoxGeometry(4.6, 2.15, 2.55), scarletMat);
             tenderBody.position.y = 2.25;
             tender.add(tenderBody);
-
+ 
             const coalMound = new THREE.Mesh(
-                new THREE.DodecahedronGeometry(1.35, 1),
+                new THREE.DodecahedronGeometry(1.35, Q.mobile ? 0 : 1),
                 new THREE.MeshStandardMaterial({ color: 0x050608, roughness: 0.95 })
             );
             coalMound.scale.set(1.6, 0.55, 0.85);
             coalMound.position.set(0, 3.35, 0);
             tender.add(coalMound);
-
+ 
             [-1.4, 1.4].forEach(wx => {
                 [-1.1, 1.1].forEach(wz => {
                     const w = createTrainWheel(0.58, blackIronMat, goldBrassMat);
@@ -1899,39 +1912,44 @@
                     trainWheels.push(w);
                 });
             });
-
-            // C. TWO HOGWARTS PASSENGER COACHES
+ 
+            // C. العربات (هندسة مشتركة بين العربتين)
+            const coachBodyGeo = new THREE.BoxGeometry(8.4, 2.55, 2.62);
+            const coachRoofGeo = new THREE.CylinderGeometry(1.36, 1.36, 8.48, S(20), 1, false, -Math.PI * 0.4, Math.PI * 0.8);
+            const winGeo = new THREE.BoxGeometry(1.08, 0.82, 2.66);
+ 
             [-11.2, -20.8].forEach((coachX, idx) => {
                 const coach = new THREE.Group();
                 coach.position.set(coachX, 0, 0);
                 trainMasterGroup.add(coach);
-
-                const body = new THREE.Mesh(new THREE.BoxGeometry(8.4, 2.55, 2.62), scarletMat);
+ 
+                const body = new THREE.Mesh(coachBodyGeo, scarletMat);
                 body.position.y = 2.5;
                 coach.add(body);
-
-                const roof = new THREE.Mesh(
-                    new THREE.CylinderGeometry(1.36, 1.36, 8.48, 20, 1, false, -Math.PI * 0.4, Math.PI * 0.8),
-                    blackIronMat
-                );
+ 
+                const roof = new THREE.Mesh(coachRoofGeo, blackIronMat);
                 roof.rotation.z = Math.PI / 2;
                 roof.position.y = 2.82;
                 coach.add(roof);
-
-                const coachLight = new THREE.PointLight(0xffb74d, 1.4, 11);
-                coachLight.position.set(0, 3.0, 2.2);
-                coach.add(coachLight);
-
+ 
+                if (Q.realLights) {
+                    const coachLight = new THREE.PointLight(0xffb74d, 1.4, 11);
+                    coachLight.position.set(0, 3.0, 2.2);
+                    coach.add(coachLight);
+                }
+ 
                 for (let wIdx = -2; wIdx <= 2; wIdx++) {
-                    const winMesh = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.82, 2.66), warmWindowMat);
+                    const winMesh = new THREE.Mesh(winGeo, warmWindowMat);
                     winMesh.position.set(wIdx * 1.55, 2.85, 0);
                     coach.add(winMesh);
-
-                    const winGlow = makeGlowSprite(0xf59e0b, 1.9, 0.35);
-                    winGlow.position.set(wIdx * 1.55, 2.85, 1.45);
-                    coach.add(winGlow);
+ 
+                    if (!Q.mobile) {
+                        const winGlow = makeGlowSprite(0xf59e0b, 1.9, 0.35);
+                        winGlow.position.set(wIdx * 1.55, 2.85, 1.45);
+                        coach.add(winGlow);
+                    }
                 }
-
+ 
                 if (idx === 0) {
                     const cBannerTex = createLocomotiveNameplateTexture("مقصورة الأميرة شادية • إهداء قيس جازي");
                     const cBanner = new THREE.Mesh(
@@ -1941,7 +1959,7 @@
                     cBanner.position.set(0, 1.68, 1.34);
                     coach.add(cBanner);
                 }
-
+ 
                 [-2.8, 2.8].forEach(wx => {
                     [-1.1, 1.1].forEach(wz => {
                         const w = createTrainWheel(0.54, blackIronMat, goldBrassMat);
@@ -1951,399 +1969,328 @@
                     });
                 });
             });
-
-            // D. VOLUMETRIC BILLOWING STEAM CLOUDS
+ 
+            // D. بخار القطار
             const cloudTex = getVolumetricSteamTexture();
-            for (let s = 0; s < 32; s++) {
-                const puffMat = new THREE.SpriteMaterial({
-                    map: cloudTex,
-                    color: 0xcbd5e1,
-                    transparent: true,
-                    opacity: 0.5,
-                    depthWrite: false
-                });
-                const puff = new THREE.Sprite(puffMat);
+            for (let s = 0; s < Q.steam; s++) {
+                const puff = new THREE.Sprite(new THREE.SpriteMaterial({
+                    map: cloudTex, color: 0xcbd5e1, transparent: true, opacity: 0.5, depthWrite: false
+                }));
                 puff.userData = {
-                    age: (s / 32) * 3.2,
+                    age: (s / Q.steam) * 3.2,
                     rotSpeed: (Math.random() - 0.5) * 1.1,
                     driftZ: (Math.random() - 0.5) * 0.5
                 };
                 scene.add(puff);
                 steamPuffs.push(puff);
             }
-
-            for (let c = 0; c < 10; c++) {
-                const cMat = new THREE.SpriteMaterial({
-                    map: cloudTex,
-                    color: 0x94a3b8,
-                    transparent: true,
-                    opacity: 0.38,
-                    depthWrite: false
-                });
-                const cPuff = new THREE.Sprite(cMat);
-                cPuff.userData = {
-                    age: (c / 10) * 1.2,
-                    side: c % 2 === 0 ? 1.55 : -1.55
-                };
+ 
+            for (let c = 0; c < Q.cylSteam; c++) {
+                const cPuff = new THREE.Sprite(new THREE.SpriteMaterial({
+                    map: cloudTex, color: 0x94a3b8, transparent: true, opacity: 0.38, depthWrite: false
+                }));
+                cPuff.userData = { age: (c / Q.cylSteam) * 1.2, side: c % 2 === 0 ? 1.55 : -1.55 };
                 scene.add(cPuff);
                 cylinderSteamPuffs.push(cPuff);
             }
         }
-
-        function createTrainWheel(radius, tireMat, spokeMat) {
-            const wg = new THREE.Group();
-            const tire = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, 0.22, 24), tireMat);
-            tire.rotation.x = Math.PI / 2;
-            wg.add(tire);
-
-            const rim = new THREE.Mesh(new THREE.TorusGeometry(radius * 0.88, 0.045, 8, 24), spokeMat);
-            wg.add(rim);
-
-            for (let i = 0; i < 6; i++) {
-                const spoke = new THREE.Mesh(new THREE.BoxGeometry(radius * 1.75, 0.06, 0.24), spokeMat);
-                spoke.rotation.z = (i / 6) * Math.PI;
-                wg.add(spoke);
-            }
-            return wg;
-        }
-
+ 
         /************************************************************************
-         * 6. WIZARD ON TOP OF THE TRAIN + MAGICAL WAND BEAM TO THE SKY
+         * 6. الساحر
          ************************************************************************/
         function buildWizardOnTopOfTrain() {
             wizardGroup = new THREE.Group();
-            // Slightly larger silhouette scale (1.22x) so the Wizard is unmistakable from the distant fixed view
             wizardGroup.scale.set(1.22, 1.22, 1.22);
             wizardGroup.position.set(1.1, 4.38, 0);
             wizardGroup.rotation.y = 0.25;
             trainMasterGroup.add(wizardGroup);
-
-            const darkRobeMat = new THREE.MeshStandardMaterial({
-                color: 0x0b0f17,
-                roughness: 0.78,
-                metalness: 0.12
-            });
-            const innerCloakMat = new THREE.MeshStandardMaterial({
-                color: 0x1a0b12,
-                roughness: 0.65,
-                side: THREE.DoubleSide
-            });
-            const antiqueBrassMat = new THREE.MeshStandardMaterial({
-                color: 0xb45309,
-                metalness: 0.88,
-                roughness: 0.28
-            });
-            const skinMat = new THREE.MeshStandardMaterial({
-                color: 0xd6b498,
-                roughness: 0.55
-            });
-
-            // Elder Rune Halo under the Wizard's Boots
+ 
+            const darkRobeMat = new THREE.MeshStandardMaterial({ color: 0x0b0f17, roughness: 0.78, metalness: 0.12 });
+            const innerCloakMat = new THREE.MeshStandardMaterial({ color: 0x1a0b12, roughness: 0.65, side: THREE.DoubleSide });
+            const antiqueBrassMat = new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.88, roughness: 0.28 });
+            const skinMat = new THREE.MeshStandardMaterial({ color: 0xd6b498, roughness: 0.55 });
+ 
             const runeGlow = makeGlowSprite(0xf59e0b, 3.2, 0.55);
             runeGlow.position.y = 0.12;
             wizardGroup.add(runeGlow);
-
-            const lowerRobe = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.74, 1.78, 18), darkRobeMat);
+ 
+            const lowerRobe = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.74, 1.78, S(18)), darkRobeMat);
             lowerRobe.position.y = 0.89;
             wizardGroup.add(lowerRobe);
-
-            const upperTorso = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.48, 0.95, 16), darkRobeMat);
+ 
+            const upperTorso = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.48, 0.95, S(16)), darkRobeMat);
             upperTorso.position.y = 1.85;
             wizardGroup.add(upperTorso);
-
-            const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.44, 0.12, 16), antiqueBrassMat);
+ 
+            const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.44, 0.12, S(16)), antiqueBrassMat);
             belt.position.y = 1.48;
             wizardGroup.add(belt);
-
+ 
             wizardCapeMesh = new THREE.Mesh(
-                new THREE.ConeGeometry(0.86, 2.25, 16, 1, true, Math.PI * 0.52, Math.PI * 0.96),
+                new THREE.ConeGeometry(0.86, 2.25, S(16), 1, true, Math.PI * 0.52, Math.PI * 0.96),
                 innerCloakMat
             );
             wizardCapeMesh.position.set(-0.24, 1.35, 0);
             wizardCapeMesh.rotation.z = 0.44;
             wizardGroup.add(wizardCapeMesh);
-
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.30, 18, 18), skinMat);
+ 
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.30, S(18), S(18)), skinMat);
             head.position.y = 2.52;
             wizardGroup.add(head);
-
+ 
             const beard = new THREE.Mesh(
-                new THREE.ConeGeometry(0.24, 0.78, 12),
+                new THREE.ConeGeometry(0.24, 0.78, S(12)),
                 new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.75 })
             );
             beard.rotation.x = Math.PI;
             beard.position.set(0.15, 2.16, 0);
             wizardGroup.add(beard);
-
+ 
             const hatGroup = new THREE.Group();
             hatGroup.position.set(0, 2.74, 0);
             hatGroup.rotation.z = 0.14;
-            hatGroup.add(new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.68, 0.05, 24), darkRobeMat));
-            const hatCone = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.95, 18), darkRobeMat);
+            hatGroup.add(new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.68, 0.05, S(24)), darkRobeMat));
+            const hatCone = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.95, S(18)), darkRobeMat);
             hatCone.position.y = 0.52;
             hatGroup.add(hatCone);
             wizardGroup.add(hatGroup);
-
+ 
             wizardRightArmPivot = new THREE.Group();
             wizardRightArmPivot.position.set(0.15, 2.16, 0.40);
             wizardGroup.add(wizardRightArmPivot);
-
-            const rightSleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.17, 0.95, 12), darkRobeMat);
+ 
+            const rightSleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.17, 0.95, S(12)), darkRobeMat);
             rightSleeve.position.set(0.28, 0.28, 0.22);
             rightSleeve.rotation.z = -0.75;
             rightSleeve.rotation.x = 0.35;
             wizardRightArmPivot.add(rightSleeve);
-
+ 
             const wandShaft = new THREE.Mesh(
-                new THREE.CylinderGeometry(0.02, 0.048, 1.35, 12),
+                new THREE.CylinderGeometry(0.02, 0.048, 1.35, 8),
                 new THREE.MeshStandardMaterial({ color: 0x3e2723, roughness: 0.4 })
             );
             wandShaft.position.set(0.95, 1.05, 0.58);
             wandShaft.rotation.z = -0.62;
             wandShaft.rotation.x = 0.32;
             wizardRightArmPivot.add(wandShaft);
-
+ 
             wandTipNode = new THREE.Group();
             wandTipNode.position.set(1.32, 1.52, 0.78);
             wizardRightArmPivot.add(wandTipNode);
-
-            // Bright Wand Tip Star & Halo clearly visible from afar
+ 
             wandTipNode.add(makeGlowSprite(0xffffff, 3.6, 1.0));
             wandTipNode.add(makeGlowSprite(0xf59e0b, 7.2, 0.85));
-
-            wandPointLight = new THREE.PointLight(0xfbbf24, 4.5, 28);
-            wandTipNode.add(wandPointLight);
-
-            // Magical Light Beam connecting the Wizard's Wand Tip to the Sky Spell Word
-            const beamGeo = new THREE.CylinderGeometry(0.06, 0.32, 1, 12, 1, true);
+ 
+            if (Q.realLights) {
+                wandPointLight = new THREE.PointLight(0xfbbf24, 4.5, 28);
+                wandTipNode.add(wandPointLight);
+            }
+ 
+            const beamGeo = new THREE.CylinderGeometry(0.06, 0.32, 1, S(12), 1, true);
             beamGeo.translate(0, 0.5, 0);
             beamGeo.rotateX(Math.PI / 2);
             const beamMat = new THREE.MeshBasicMaterial({
-                color: 0xfbbf24,
-                transparent: true,
-                opacity: 0.0,
-                blending: THREE.AdditiveBlending,
-                side: THREE.DoubleSide,
-                depthWrite: false
+                color: 0xfbbf24, transparent: true, opacity: 0.0,
+                blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false
             });
             wandBeamMesh = new THREE.Mesh(beamGeo, beamMat);
             scene.add(wandBeamMesh);
         }
-
-        // Subtle Floating Hogwarts Candle Lanterns in the Dark Air around the Viaduct
+ 
         function buildFloatingHogwartsLanterns() {
             const positions = [
-                { x: -11, y: 8.5, z: 4 },
-                { x: -5, y: 10.2, z: -4 },
-                { x: 6, y: 9.8, z: -3 },
-                { x: 11, y: 8.2, z: 3.5 },
-                { x: -15, y: 7.2, z: -2 },
-                { x: 14, y: 10.8, z: -4 }
+                { x: -11, y: 8.5, z: 4 }, { x: -5, y: 10.2, z: -4 }, { x: 6, y: 9.8, z: -3 },
+                { x: 11, y: 8.2, z: 3.5 }, { x: -15, y: 7.2, z: -2 }, { x: 14, y: 10.8, z: -4 }
             ];
+            const candleGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.45, 6);
+            const candleMat = new THREE.MeshBasicMaterial({ color: 0xfef3c7 });
             positions.forEach((p, idx) => {
                 const g = new THREE.Group();
                 g.position.set(p.x, p.y, p.z);
-
-                const candle = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.06, 0.06, 0.45, 8),
-                    new THREE.MeshBasicMaterial({ color: 0xfef3c7 })
-                );
-                g.add(candle);
-
+                g.add(new THREE.Mesh(candleGeo, candleMat));
                 const flameGlow = makeGlowSprite(0xf59e0b, 2.2, 0.75);
                 flameGlow.position.y = 0.32;
                 g.add(flameGlow);
-
                 g.userData = { baseY: p.y, phase: idx * 1.3 };
                 scene.add(g);
                 floatingCandles.push(g);
             });
         }
-
+ 
         /************************************************************************
-         * 7. ORGANIZED SKY SPELL ENGINE (ONE CRISP SKY BANNER AT A TIME)
+         * 7. محرك تعاويذ السماء
          ************************************************************************/
         function castShadiaSpellByIndex(spellIndex, playSound = true, customSkyTarget = null) {
-            const spell = WAND_SPELLS[spellIndex % WAND_SPELLS.length];
-            currentSpellIdx = spellIndex % WAND_SPELLS.length;
-
+            const idx = spellIndex % WAND_SPELLS.length;
+            const spell = WAND_SPELLS[idx];
+            currentSpellIdx = idx;
             wizardCastAnimTimer = 1.25;
-
-            if (playSound) {
-                soundMagic.playWandSpellChime();
-            }
-
-            if (wandPointLight) {
-                wandPointLight.color.setHex(spell.glowHex);
-            }
-            if (wandBeamMesh) {
-                wandBeamMesh.material.color.setHex(spell.glowHex);
-            }
-
-            const wandWorldPos = new THREE.Vector3();
-            wandTipNode.getWorldPosition(wandWorldPos);
-
-            spawnWandSparkBurst(wandWorldPos, spell.glowHex, 65);
-            spawnExpandingMagicRing(wandWorldPos, spell.glowHex);
-
-            // Cleanly remove previous sky banner so words NEVER overlap in the sky
+ 
+            if (playSound) soundMagic.playWandSpellChime();
+ 
+            if (wandPointLight) wandPointLight.color.setHex(spell.glowHex);
+            if (wandBeamMesh) wandBeamMesh.material.color.setHex(spell.glowHex);
+ 
+            wandTipNode.getWorldPosition(tmpWandPos);
+ 
+            spawnWandSparkBurst(tmpWandPos, spell.glowHex, 65);
+            spawnExpandingMagicRing(tmpWandPos, spell.glowHex);
+ 
+            // إزالة النص السابق (الـ texture مخزّنة فلا نتخلص منها، فقط المادة)
             if (currentSkyWordObj) {
                 scene.remove(currentSkyWordObj.sprite);
-                currentSkyWordObj.sprite.material.map.dispose();
                 currentSkyWordObj.sprite.material.dispose();
                 currentSkyWordObj = null;
             }
-
-            const wordTex = createMagicalWordTexture(spell.word3D, spell.sub3D, spell.color);
+ 
             const wordMat = new THREE.SpriteMaterial({
-                map: wordTex,
-                transparent: true,
-                opacity: 1,
-                blending: THREE.AdditiveBlending,
-                depthTest: false
+                map: getWordTexture(idx), transparent: true, opacity: 1,
+                blending: THREE.AdditiveBlending, depthTest: false
             });
             const wordSprite = new THREE.Sprite(wordMat);
-            wordSprite.position.copy(wandWorldPos);
-            //Centered, organized position in the dark sky directly above the train (fitted to vertical phone screen)
+            wordSprite.position.copy(tmpWandPos);
+ 
             const isPortraitPhone = (window.innerWidth / window.innerHeight) < 0.75;
             const defaultSkyPos = isPortraitPhone
                 ? new THREE.Vector3(0.4, 10.6, 0)
                 : new THREE.Vector3(-2.2, 11.4, 0);
             const targetSkyPos = customSkyTarget || defaultSkyPos;
             spawnExpandingMagicRing(targetSkyPos, spell.glowHex);
-
+ 
+            scene.add(wordSprite);
             currentSkyWordObj = {
                 sprite: wordSprite,
-                startPos: wandWorldPos.clone(),
+                startPos: tmpWandPos.clone(),
                 targetPos: targetSkyPos,
                 age: 0,
                 maxAge: 6.5
             };
-
+ 
             document.getElementById('spell-title-badge').textContent = spell.badge;
             document.getElementById('active-wand-word').textContent = `✨ ${spell.word3D} ✨`;
             document.getElementById('active-wand-verse').textContent = spell.verse;
         }
-
+ 
         function castNextShadiaSpell(withToast = false, customSkyTarget = null) {
             const nextIdx = (currentSpellIdx + 1) % WAND_SPELLS.length;
             castShadiaSpellByIndex(nextIdx, true, customSkyTarget);
-            if (withToast) {
-                showMagicToast(`🪄 أطلق الساحر: ${WAND_SPELLS[nextIdx].word3D}`);
-            }
+            if (withToast) showMagicToast(`🪄 أطلق الساحر: ${WAND_SPELLS[nextIdx].word3D}`);
         }
-
-        function spawnWandSparkBurst(originVec, hexColor, count = 55) {
-            const geo = new THREE.BufferGeometry();
-            const pos = new Float32Array(count * 3);
-            const vels = [];
-
-            for (let i = 0; i < count; i++) {
-                pos[i * 3] = originVec.x;
-                pos[i * 3 + 1] = originVec.y;
-                pos[i * 3 + 2] = originVec.z;
-
-                const angle = Math.random() * Math.PI * 2;
-                const speed = 1.6 + Math.random() * 5.2;
-                vels.push({
-                    vx: -2.0 + Math.cos(angle) * speed,
-                    vy: 1.8 + Math.random() * 4.8,
-                    vz: Math.sin(angle) * speed
-                });
-            }
-
-            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-            const pts = new THREE.Points(geo, new THREE.PointsMaterial({
-                map: getSoftGlowTexture(),
-                color: hexColor,
-                size: 1.7,
-                transparent: true,
-                opacity: 1,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            }));
-            scene.add(pts);
-            wandBurstParticles.push({ points: pts, vels: vels, age: 0, maxAge: 1.65 });
-        }
-
+ 
         /************************************************************************
-         * 8. MAIN DARK CINEMATIC ANIMATION LOOP (FIXED DISTANT VIEW)
+         * 8. حلقة الرسم (مع سقف 30fps على الموبايل ودقة تتكيّف تلقائياً)
          ************************************************************************/
-        function animateLoop() {
+        let curPixelRatio = 1;
+        let lastFrameT = 0;
+        let slowCounter = 0;
+        let perfWarm = 90, perfFrames = 0, perfAccum = 0;
+        let welcomeOpen = true, spellsOpen = false, secretOpen = false;
+        const FRAME_MS = 1000 / 30;
+ 
+        // إذا الجهاز ما قدر يمشي بسلاسة: نقلّل الدقة تدريجياً
+        function adaptResolution(rawDt) {
+            if (rawDt > 0.25) return;
+            if (perfWarm > 0) { perfWarm--; return; }
+            perfAccum += rawDt;
+            perfFrames++;
+            if (perfFrames >= 60) {
+                const avg = perfAccum / perfFrames;
+                perfAccum = 0; perfFrames = 0;
+                const limit = Q.fpsCap ? 0.043 : 0.030;
+                if (avg > limit && curPixelRatio > Q.minPixelRatio + 0.01) {
+                    curPixelRatio = Math.max(Q.minPixelRatio, curPixelRatio - 0.15);
+                    renderer.setPixelRatio(curPixelRatio);
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    perfWarm = 30;
+                }
+            }
+        }
+ 
+        function animateLoop(now) {
             requestAnimationFrame(animateLoop);
-
-            const dt = Math.min(clock.getDelta(), 0.1);
-            const elapsed = clock.getElapsedTime();
+            now = now || performance.now();
+ 
+            if (Q.fpsCap && now - lastFrameT < FRAME_MS - 1.5) return;
+ 
+            // أثناء النوافذ المعتمة (95% سواد) نرسم كل 3 فريمات فقط لتوفير البطارية
+            const slowRender = welcomeOpen || spellsOpen || secretOpen;
+            if (slowRender && (++slowCounter % 3) !== 0) return;
+ 
+            lastFrameT = now;
+            const rawDt = clock.getDelta();
+            const dt = Math.min(rawDt, 0.1);
+            elapsedT += dt;
+            const elapsed = elapsedT;
+            if (!slowRender) adaptResolution(rawDt);
+ 
             const turboMult = isTurboMode ? 1.85 : 1.0;
             const trainSpeed = 14.0 * turboMult;
-
-            updateWeatherOverlay(elapsed, turboMult);
-
-            // 1. Fixed Distant Camera with subtle tripod breathing + gentle phone tilt parallax
+ 
+            updateWeatherOverlay(elapsed, turboMult, dt);
+ 
+            // 1. الكاميرا
             camera.position.x = fixedCamBasePos.x + Math.sin(elapsed * 0.45) * 0.3 + phoneTiltOffset.x;
             camera.position.y = fixedCamBasePos.y + Math.cos(elapsed * 0.35) * 0.18 + phoneTiltOffset.y;
             camera.position.z = fixedCamBasePos.z;
             camera.lookAt(fixedCamTarget);
-
-            // 2. Flickering Coal Firebox & Occasional Storm Lightning
+ 
+            // 2. الجمر والبرق
             if (fireboxLight) {
                 fireboxLight.intensity = (isTurboMode ? 4.8 : 2.4) + Math.sin(elapsed * 22) * 0.85;
             }
-
-            // Emit glowing red-gold chimney sparks when Turbo Mode is active
             if (isTurboMode && Math.random() < 0.35) {
-                spawnWandSparkBurst(new THREE.Vector3(8.9, 5.1, 0), 0xf97316, 8);
+                spawnWandSparkBurst(CHIMNEY_POS, 0xf97316, 8);
             }
-
+ 
             if (lightningFlashTimer > 0) {
                 lightningFlashTimer -= dt;
-                lightningLight.intensity = Math.random() > 0.3 ? 3.2 : 0.3;
-            } else {
-                lightningLight.intensity = 0;
-                if (Math.random() < 0.0015) triggerLightningFlash();
+                applyLightning(Math.random() > 0.3 ? 3.2 : 0.3);
+                if (lightningFlashTimer <= 0) applyLightning(0);
+            } else if (Math.random() < 0.0015 * dt * 60) {
+                triggerLightningFlash();
             }
-
-            // 3. Scroll Viaduct Arches, Sleepers, Trees & Lake Light Ripples
-            scrollingRailSleepers.forEach(tie => {
-                tie.position.x -= trainSpeed * dt;
-                if (tie.position.x < -70) tie.position.x += 140;
-            });
-
-            scrollingBridgePillars.forEach(pillar => {
-                pillar.position.x -= trainSpeed * dt;
-                if (pillar.position.x < -90) pillar.position.x += 180;
-            });
-
-            scrollingTrees.forEach(tree => {
-                tree.position.x -= trainSpeed * 0.65 * dt;
-                if (tree.position.x < -90) tree.position.x += 180;
-            });
-
-            lakeLightRipples.forEach(r => {
+ 
+            // 3. التمرير الدوري للعوارض والأعمدة (حركة مجموعة واحدة بدل مئات الأجسام)
+            sleeperOffset = (sleeperOffset + trainSpeed * dt) % 1.25;
+            sleepersRoot.position.x = -sleeperOffset;
+ 
+            pillarOffset = (pillarOffset + trainSpeed * dt) % 12;
+            pillarsRoot.position.x = -pillarOffset;
+ 
+            const treeMove = trainSpeed * 0.65 * dt;
+            for (let i = 0; i < treeData.length; i++) {
+                treeData[i].x -= treeMove;
+                if (treeData[i].x < -90) treeData[i].x += 180;
+            }
+            updateTreeMatrices();
+ 
+            for (let i = 0; i < lakeLightRipples.length; i++) {
+                const r = lakeLightRipples[i];
                 r.sprite.material.opacity = 0.16 + 0.14 * Math.sin(elapsed * 3.5 + r.phase);
                 r.sprite.position.x = r.baseX + Math.sin(elapsed * 1.5 + r.phase) * 0.8;
-            });
-
-            // 4. Spin Wheels & Connecting Rods
+            }
+ 
+            // 4. العجلات والقضبان
             const wheelAngularVel = trainSpeed * 1.15;
-            trainWheels.forEach(w => {
-                w.rotation.z -= wheelAngularVel * dt;
-            });
-
-            connectingRods.forEach(r => {
-                r.mesh.position.x = 4.1 + Math.cos(elapsed * wheelAngularVel) * 0.26;
-                r.mesh.position.y = 0.92 + Math.sin(elapsed * wheelAngularVel) * 0.22;
-            });
-
+            for (let i = 0; i < trainWheels.length; i++) trainWheels[i].rotation.z -= wheelAngularVel * dt;
+ 
+            const rodX = 4.1 + Math.cos(elapsed * wheelAngularVel) * 0.26;
+            const rodY = 0.92 + Math.sin(elapsed * wheelAngularVel) * 0.22;
+            for (let i = 0; i < connectingRods.length; i++) {
+                connectingRods[i].mesh.position.x = rodX;
+                connectingRods[i].mesh.position.y = rodY;
+            }
+ 
             if (trainMasterGroup) {
                 trainMasterGroup.position.y = Math.sin(elapsed * (isTurboMode ? 22 : 14)) * (isTurboMode ? 0.025 : 0.014);
             }
-
-            // 5. Floating Hogwarts Candles & Window Heart Lanterns
-            floatingCandles.forEach(c => {
+ 
+            // 5. الشموع والفوانيس
+            for (let i = 0; i < floatingCandles.length; i++) {
+                const c = floatingCandles[i];
                 c.position.y = c.userData.baseY + Math.sin(elapsed * 1.8 + c.userData.phase) * 0.35;
-            });
-
+            }
+ 
             for (let i = windowHeartLanterns.length - 1; i >= 0; i--) {
                 const hl = windowHeartLanterns[i];
                 hl.age += dt;
@@ -2358,43 +2305,46 @@
                 hl.sprite.position.z += hl.vz * dt;
                 hl.sprite.material.opacity = 1 - (hl.age / hl.maxAge);
             }
-
-            // 6. Volumetric Billowing Steam Trail
-            steamPuffs.forEach(puff => {
+ 
+            // 6. البخار
+            const stScale = Q.steamScale;
+            for (let i = 0; i < steamPuffs.length; i++) {
+                const puff = steamPuffs[i];
                 puff.userData.age += dt * (1.05 * turboMult);
                 if (puff.userData.age > 3.2) puff.userData.age = 0;
-
+ 
                 const t = puff.userData.age / 3.2;
                 puff.position.set(
                     8.9 - t * 24.0,
                     5.05 + Math.pow(t, 0.75) * 5.2 + Math.sin(t * 5 + elapsed) * 0.2,
                     puff.userData.driftZ * t * 3.0
                 );
-                const s = 1.2 + t * 5.8;
+                const s = (1.2 + t * 5.8) * stScale;
                 puff.scale.set(s, s * 0.85, 1);
                 puff.material.rotation += puff.userData.rotSpeed * dt;
                 puff.material.opacity = (1 - t) * 0.44;
-            });
-
-            cylinderSteamPuffs.forEach(cPuff => {
+            }
+ 
+            for (let i = 0; i < cylinderSteamPuffs.length; i++) {
+                const cPuff = cylinderSteamPuffs[i];
                 cPuff.userData.age += dt * (1.7 * turboMult);
                 if (cPuff.userData.age > 1.2) cPuff.userData.age = 0;
-
+ 
                 const t = cPuff.userData.age / 1.2;
                 cPuff.position.set(
                     8.3 - t * 6.5,
                     1.05 + t * 0.8,
                     cPuff.userData.side + (cPuff.userData.side > 0 ? t * 1.1 : -t * 1.1)
                 );
-                const s = 0.7 + t * 2.3;
+                const s = (0.7 + t * 2.3) * stScale;
                 cPuff.scale.set(s, s, 1);
                 cPuff.material.opacity = (1 - t) * 0.3;
-            });
-
-            // 7. Animate Wizard (including Levitation Spin when tapped!)
+            }
+ 
+            // 7. الساحر
             if (wizardGroup) {
                 wizardCapeMesh.rotation.z = 0.46 + Math.sin(elapsed * 9.5 * turboMult) * 0.16;
-
+ 
                 if (wizardSpinTimer > 0) {
                     wizardSpinTimer = Math.max(0, wizardSpinTimer - dt);
                     const sWave = Math.sin((wizardSpinTimer / 1.2) * Math.PI);
@@ -2404,21 +2354,21 @@
                     wizardGroup.position.y = 4.38;
                     wizardGroup.rotation.y = 0.25;
                 }
-
+ 
                 if (wizardCastAnimTimer > 0) {
                     wizardCastAnimTimer = Math.max(0, wizardCastAnimTimer - dt * 1.4);
                     const wave = Math.sin(wizardCastAnimTimer * Math.PI);
                     wizardRightArmPivot.rotation.z = wave * 0.65;
                     wizardRightArmPivot.rotation.y = wave * 0.48;
-                    wandPointLight.intensity = 4.5 + wave * 6.5;
+                    if (wandPointLight) wandPointLight.intensity = 4.5 + wave * 6.5;
                 } else {
                     wizardRightArmPivot.rotation.z = Math.sin(elapsed * 2.2) * 0.1;
                     wizardRightArmPivot.rotation.y = Math.cos(elapsed * 1.8) * 0.08;
-                    wandPointLight.intensity = 3.8 + Math.sin(elapsed * 5) * 0.6;
+                    if (wandPointLight) wandPointLight.intensity = 3.8 + Math.sin(elapsed * 5) * 0.6;
                 }
             }
-
-            // 8. Animate 3D Patronus Stag Leaping Across the Sky
+ 
+            // 8. الغزال
             if (patronusFlightState.active && patronus3DGroup) {
                 patronusFlightState.progress += dt * 0.42;
                 const p = patronusFlightState.progress;
@@ -2427,36 +2377,33 @@
                     patronus3DGroup.visible = false;
                     spawnWandSparkBurst(patronus3DGroup.position, 0x38bdf8, 80);
                 } else {
-                    // Parabolic leap from the Wizard across the viaduct
-                    const x = 2.5 - p * 16.0;
-                    const y = 6.2 + Math.sin(p * Math.PI) * 5.8;
-                    const z = 1.5 + Math.sin(p * Math.PI * 2) * 2.5;
-                    patronus3DGroup.position.set(x, y, z);
+                    patronus3DGroup.position.set(
+                        2.5 - p * 16.0,
+                        6.2 + Math.sin(p * Math.PI) * 5.8,
+                        1.5 + Math.sin(p * Math.PI * 2) * 2.5
+                    );
                     patronus3DGroup.rotation.y = Math.PI + Math.cos(p * Math.PI * 2) * 0.25;
                     patronus3DGroup.rotation.z = (0.5 - p) * 0.55;
-
-                    if (Math.random() < 0.45) {
-                        spawnWandSparkBurst(patronus3DGroup.position, 0x7dd3fc, 4);
-                    }
+                    if (Math.random() < 0.45) spawnWandSparkBurst(patronus3DGroup.position, 0x7dd3fc, 4);
                 }
             }
-
-            // 9. Animate 3D Hedwig Snowy Owl Flying & Delivering Shadia's Letter
+ 
+            // 9. البومة
             if (hedwigFlightState.active && hedwigOwlGroup) {
                 hedwigFlightState.progress += dt * 0.38;
                 const hp = hedwigFlightState.progress;
                 hedwigWingLeft.rotation.x = Math.sin(elapsed * 24) * 0.65;
                 hedwigWingRight.rotation.x = -Math.sin(elapsed * 24) * 0.65;
-
+ 
                 if (hp >= 1.0) {
                     hedwigFlightState.active = false;
                     hedwigOwlGroup.visible = false;
                 } else {
-                    const hx = -18 + hp * 32.0;
-                    const hy = 12.5 - Math.sin(hp * Math.PI) * 3.8;
-                    const hz = -4.0 + Math.sin(hp * Math.PI) * 8.5;
-                    hedwigOwlGroup.position.set(hx, hy, hz);
-
+                    hedwigOwlGroup.position.set(
+                        -18 + hp * 32.0,
+                        12.5 - Math.sin(hp * Math.PI) * 3.8,
+                        -4.0 + Math.sin(hp * Math.PI) * 8.5
+                    );
                     if (hp >= 0.52 && !hedwigFlightState.letterDropped) {
                         hedwigFlightState.letterDropped = true;
                         spawnWandSparkBurst(hedwigOwlGroup.position, 0xfde047, 50);
@@ -2464,70 +2411,60 @@
                     }
                 }
             }
-
+ 
             autoSpellTimer += dt;
             if (autoSpellTimer > 5.8) {
                 autoSpellTimer = 0;
                 castNextShadiaSpell(false);
             }
-
-            // 10. Animate Single Organized Sky Spell Banner + Magical Wand Light Ray
+ 
+            // 10. نص السماء وشعاع العصا
             if (currentSkyWordObj) {
                 currentSkyWordObj.age += dt;
                 if (currentSkyWordObj.age >= currentSkyWordObj.maxAge) {
                     scene.remove(currentSkyWordObj.sprite);
-                    currentSkyWordObj.sprite.material.map.dispose();
                     currentSkyWordObj.sprite.material.dispose();
                     currentSkyWordObj = null;
                     if (wandBeamMesh) wandBeamMesh.material.opacity = 0;
                 } else {
                     const flyT = Math.min(1, currentSkyWordObj.age / 1.05);
                     const easeOut = 1 - Math.pow(1 - flyT, 3);
-
+ 
                     currentSkyWordObj.sprite.position.lerpVectors(
-                        currentSkyWordObj.startPos,
-                        currentSkyWordObj.targetPos,
-                        easeOut
+                        currentSkyWordObj.startPos, currentSkyWordObj.targetPos, easeOut
                     );
                     currentSkyWordObj.sprite.position.y += Math.sin(elapsed * 2.2) * 0.08;
-
-                    // Responsive 3D Sky Word sizing so it never clips on vertical mobile screens
+ 
                     const isPortrait = camera.aspect < 0.75;
                     const fullW = isPortrait ? 11.4 : 14.8;
                     const fullH = isPortrait ? 4.7 : 6.1;
-                    currentSkyWordObj.sprite.scale.set(
-                        0.4 + easeOut * fullW,
-                        0.16 + easeOut * fullH,
-                        1
-                    );
-
+                    currentSkyWordObj.sprite.scale.set(0.4 + easeOut * fullW, 0.16 + easeOut * fullH, 1);
+ 
                     if (wandBeamMesh && currentSkyWordObj.age < 1.6) {
-                        const wandPos = new THREE.Vector3();
-                        wandTipNode.getWorldPosition(wandPos);
-                        wandBeamMesh.position.copy(wandPos);
+                        wandTipNode.getWorldPosition(tmpWandPos2);
+                        wandBeamMesh.position.copy(tmpWandPos2);
                         wandBeamMesh.lookAt(currentSkyWordObj.sprite.position);
-                        const dist = wandPos.distanceTo(currentSkyWordObj.sprite.position);
+                        const dist = tmpWandPos2.distanceTo(currentSkyWordObj.sprite.position);
                         wandBeamMesh.scale.set(1, 1, dist);
                         wandBeamMesh.material.opacity = (1 - currentSkyWordObj.age / 1.6) * 0.55;
                     } else if (wandBeamMesh) {
                         wandBeamMesh.material.opacity = 0;
                     }
-
+ 
                     if (currentSkyWordObj.age > currentSkyWordObj.maxAge - 1.2) {
                         currentSkyWordObj.sprite.material.opacity =
                             (currentSkyWordObj.maxAge - currentSkyWordObj.age) / 1.2;
                     }
                 }
             }
-
-            // 11. Animate Expanding 3D Magic Rings
+ 
+            // 11. الحلقات السحرية
             for (let i = expandingMagicRings.length - 1; i >= 0; i--) {
                 const r = expandingMagicRings[i];
                 r.age += dt;
                 if (r.age >= r.maxAge) {
                     scene.remove(r.mesh);
-                    r.mesh.geometry.dispose();
-                    r.mesh.material.dispose();
+                    r.mesh.material.dispose(); // الهندسة مشتركة فلا نتخلص منها
                     expandingMagicRings.splice(i, 1);
                     continue;
                 }
@@ -2536,52 +2473,39 @@
                 r.mesh.scale.set(scale, scale, 1);
                 r.mesh.material.opacity = (1 - progress) * 0.85;
             }
-
-            // 12. Animate Wand Spark Particles
-            for (let i = wandBurstParticles.length - 1; i >= 0; i--) {
-                const b = wandBurstParticles[i];
-                b.age += dt;
-                if (b.age >= b.maxAge) {
-                    scene.remove(b.points);
-                    b.points.geometry.dispose();
-                    b.points.material.dispose();
-                    wandBurstParticles.splice(i, 1);
-                    continue;
-                }
-                const arr = b.points.geometry.attributes.position.array;
-                for (let j = 0; j < b.vels.length; j++) {
-                    arr[j * 3] += b.vels[j].vx * dt;
-                    arr[j * 3 + 1] += b.vels[j].vy * dt;
-                    arr[j * 3 + 2] += b.vels[j].vz * dt;
-                    b.vels[j].vy -= 1.1 * dt;
-                }
-                b.points.geometry.attributes.position.needsUpdate = true;
-                b.points.material.opacity = 1 - (b.age / b.maxAge);
-            }
-
+ 
+            // 12. جزيئات الشرر (نظام مجمَّع واحد)
+            updateSparks(dt);
+ 
             renderer.render(scene, camera);
         }
-
+ 
+        let resizeTimer = null;
         function onWindowResize() {
-            updateFixedDistantCameraFraming();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            resizeWeatherOverlay();
+            // تأخير بسيط: شريط المتصفح بالموبايل يطلق resize كثير وكل واحد يعيد بناء الـ buffers
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                updateFixedDistantCameraFraming();
+                renderer.setPixelRatio(curPixelRatio);
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                resizeWeatherOverlay();
+            }, 150);
         }
-
+ 
         /************************************************************************
-         * 9. INTERACTIVE SCENE RAYCASTING, FINGER WAND TRAIL & UI MODALS
+         * 9. التفاعل
          ************************************************************************/
         let currentSkyThemeIdx = 0;
         let isDraggingWand = false;
-        let pointerDownPos = { x: 0, y: 0 };
-
+        let lastTrailTime = 0;
+ 
         function openSecretSurpriseModal(type = 'owl') {
             const modal = document.getElementById('secret-letter-modal');
             const icon = document.getElementById('secret-modal-icon');
             const badge = document.getElementById('secret-modal-badge');
             const title = document.getElementById('secret-modal-title');
             const poem = document.getElementById('secret-modal-poem');
-
+ 
             if (type === 'snitch') {
                 icon.textContent = '✨🟡✨';
                 badge.textContent = 'أمسكتِ بالكرة الذهبية المجنحة (Golden Snitch)!';
@@ -2593,20 +2517,21 @@
                 title.textContent = 'مخطوطة قيس جازي إلى شادية';
                 poem.innerHTML = '"حملتْ إليكِ البومةُ البيضاءُ مكتوبي .. يا شاديةً سكنتْ روحي ومحبّوبي<br>لو كانَ في عالمِ الأسحارِ معجزةٌ .. فأنتِ وحدكِ أغلَى كلِّ مطلوبِ"';
             }
-
+ 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            secretOpen = true;
         }
-
+ 
         function closeSecretSurpriseModal() {
             const modal = document.getElementById('secret-letter-modal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+            secretOpen = false;
             castNextShadiaSpell(true);
         }
-
+ 
         function bindInteractiveSceneGestures(domElement) {
-            // Optional Mobile Gyroscope / Tilt Micro-Parallax (while keeping distant camera fixed)
             window.addEventListener('deviceorientation', (e) => {
                 if (e.gamma !== null && e.beta !== null) {
                     const targetX = Math.max(-0.8, Math.min(0.8, (e.gamma / 45) * 0.7));
@@ -2615,43 +2540,41 @@
                     phoneTiltOffset.y += (targetY - phoneTiltOffset.y) * 0.08;
                 }
             }, { passive: true });
-
+ 
             domElement.addEventListener('pointerdown', (e) => {
                 isDraggingWand = true;
-                pointerDownPos.x = e.clientX;
-                pointerDownPos.y = e.clientY;
-                addWandTrailParticle(e.clientX, e.clientY);
-                spawnMobileTouchRipple(e.clientX, e.clientY);
+                addWandTrailParticle(e.clientX, e.clientY, null, Q.mobile ? 2 : 3);
+                touchRipples.push({ x: e.clientX, y: e.clientY, age: 0 });
                 triggerMobileHaptic(12);
             });
-
+ 
             window.addEventListener('pointermove', (e) => {
                 if (!isDraggingWand) return;
+                const t = performance.now();
+                if (t - lastTrailTime < 24) return; // تقليل عدد الجزيئات عند السحب
+                lastTrailTime = t;
                 addWandTrailParticle(e.clientX, e.clientY);
-            });
-
+            }, { passive: true });
+ 
             window.addEventListener('pointerup', (e) => {
                 if (!isDraggingWand) return;
                 isDraggingWand = false;
-
-                // 1. Generous Mobile Hit Radius (68px) for the flying Golden Snitch
+ 
                 const distToSnitch = Math.hypot(e.clientX - goldenSnitch.x, e.clientY - goldenSnitch.y);
                 if (distToSnitch < 68) {
                     triggerMobileHaptic([25, 40, 25]);
                     soundMagic.playWandSpellChime();
-                    for (let k = 0; k < 28; k++) addWandTrailParticle(goldenSnitch.x, goldenSnitch.y, '#fde047');
+                    addWandTrailParticle(goldenSnitch.x, goldenSnitch.y, '#fde047', 20);
                     openSecretSurpriseModal('snitch');
                     return;
                 }
-
-                // 2. Raycast into the 3D scene to see what the user tapped or dragged toward
-                const mouse = new THREE.Vector2(
+ 
+                tmpMouse.set(
                     (e.clientX / window.innerWidth) * 2 - 1,
                     -(e.clientY / window.innerHeight) * 2 + 1
                 );
-                raycaster.setFromCamera(mouse, camera);
-
-                // Check Wizard tap
+                raycaster.setFromCamera(tmpMouse, camera);
+ 
                 if (wizardGroup) {
                     const wizHits = raycaster.intersectObjects(wizardGroup.children, true);
                     if (wizHits.length > 0) {
@@ -2661,21 +2584,19 @@
                         return;
                     }
                 }
-
-                // Check Train tap
+ 
                 if (trainMasterGroup) {
                     const trainHits = raycaster.intersectObjects(trainMasterGroup.children, true);
                     if (trainHits.length > 0) {
                         triggerMobileHaptic(25);
                         spawnWindowHeartLanterns();
-                        spawnWandSparkBurst(new THREE.Vector3(8.9, 5.1, 0), 0xfbbf24, 55);
+                        spawnWandSparkBurst(CHIMNEY_POS, 0xfbbf24, 55);
                         soundMagic.playTrainWhistle();
                         showMagicToast('🚂 تفاعل القطار! فوانيس مضيئة تخرج من مقصورة شادية!');
                         return;
                     }
                 }
-
-                // Check Castle tap
+ 
                 if (castleGroupRef) {
                     const castleHits = raycaster.intersectObjects(castleGroupRef.children, true);
                     if (castleHits.length > 0) {
@@ -2684,22 +2605,20 @@
                         return;
                     }
                 }
-
-                // Default: Cast the next spell toward the tapped sky region (fitted neatly inside mobile portrait screen)
+ 
                 autoSpellTimer = 0;
                 const isPortrait = (window.innerWidth / window.innerHeight) < 0.75;
                 const clampedX = isPortrait
-                    ? Math.max(-2.5, Math.min(3.2, mouse.x * 5.5))
-                    : Math.max(-7.5, Math.min(4.5, mouse.x * 11));
-                const clampedY = Math.max(9.5, Math.min(12.2, 10.4 + mouse.y * 2.5));
+                    ? Math.max(-2.5, Math.min(3.2, tmpMouse.x * 5.5))
+                    : Math.max(-7.5, Math.min(4.5, tmpMouse.x * 11));
+                const clampedY = Math.max(9.5, Math.min(12.2, 10.4 + tmpMouse.y * 2.5));
                 castNextShadiaSpell(true, new THREE.Vector3(clampedX, clampedY, 0));
             });
         }
-
+ 
         function populateSpellBookModal() {
             const container = document.getElementById('spells-list-container');
             container.innerHTML = '';
-
             WAND_SPELLS.forEach((sp, idx) => {
                 const card = document.createElement('div');
                 card.className = 'bg-black/60 hover:bg-amber-950/30 border border-amber-600/35 rounded-2xl p-3 cursor-pointer transition';
@@ -2720,60 +2639,64 @@
                 container.appendChild(card);
             });
         }
-
+ 
         function openSpellsModal() {
             const m = document.getElementById('spells-modal');
             m.classList.remove('hidden');
             m.classList.add('flex');
+            spellsOpen = true;
         }
-
+ 
         function closeSpellsModal() {
             const m = document.getElementById('spells-modal');
             m.classList.add('hidden');
             m.classList.remove('flex');
+            spellsOpen = false;
         }
-
+ 
+        let toastTimer = null;
         function showMagicToast(msg) {
             const t = document.getElementById('magic-toast');
             t.textContent = msg;
-            t.classList.remove('opacity-0', '-translate-y-2');
-            t.classList.add('opacity-100', 'translate-y-0');
-            clearTimeout(t.timer);
-            t.timer = setTimeout(() => {
-                t.classList.remove('opacity-100', 'translate-y-0');
-                t.classList.add('opacity-0', '-translate-y-2');
+            t.style.opacity = '1';
+            t.style.transform = 'translateY(0)';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(-8px)';
             }, 2500);
         }
-
+ 
         function bindEvents() {
             populateSpellBookModal();
-
+ 
             document.getElementById('board-train-btn').addEventListener('click', () => {
-                document.getElementById('welcome-modal').classList.add('opacity-0', 'pointer-events-none');
+                const wm = document.getElementById('welcome-modal');
+                wm.classList.add('opacity-0', 'pointer-events-none');
+                welcomeOpen = false;
+                // إزالة الطبقة بالكامل بعد انتهاء التلاشي حتى لا تبقى شاشة كاملة فوق المشهد
+                setTimeout(() => { wm.style.display = 'none'; }, 750);
                 soundMagic.start();
                 triggerLightningFlash();
                 castShadiaSpellByIndex(0, false);
                 showMagicToast('🚂 اسحبي إصبعكِ في السماء أو المسي القطار والساحر والكرة الذهبية!');
             });
-
+ 
             document.getElementById('cast-wand-btn').addEventListener('click', () => {
                 autoSpellTimer = 0;
                 castNextShadiaSpell(true);
             });
-
+ 
             document.getElementById('patronus-burst-btn').addEventListener('click', () => {
                 autoSpellTimer = 0;
                 trigger3DPatronusLeap();
             });
-
-            document.getElementById('summon-owl-btn').addEventListener('click', () => {
-                triggerHedwigOwlDelivery();
-            });
-
+ 
+            document.getElementById('summon-owl-btn').addEventListener('click', triggerHedwigOwlDelivery);
+ 
             document.getElementById('turbo-fire-btn').addEventListener('click', () => {
                 isTurboMode = !isTurboMode;
-                const btn = document.getElementById('turbo-fire-btn');
-                btn.classList.toggle('active-mode', isTurboMode);
+                document.getElementById('turbo-fire-btn').classList.toggle('active-mode', isTurboMode);
                 spawnWindowHeartLanterns();
                 if (isTurboMode) {
                     soundMagic.playTrainWhistle();
@@ -2782,48 +2705,69 @@
                     showMagicToast('🚂 عودة قطار شادية إلى السرعة السينمائية الهادئة');
                 }
             });
-
-            document.getElementById('castle-fireworks-btn').addEventListener('click', () => {
-                launchCastleFireworks();
-            });
-
+ 
+            document.getElementById('castle-fireworks-btn').addEventListener('click', launchCastleFireworks);
             document.getElementById('close-secret-modal-btn').addEventListener('click', closeSecretSurpriseModal);
-
+ 
             document.getElementById('whistle-btn').addEventListener('click', () => {
                 soundMagic.playTrainWhistle();
                 triggerLightningFlash();
                 spawnWindowHeartLanterns();
                 showMagicToast('🚂 صافرة البخار تدوي بهدوء في وادي الضباب المظلم');
             });
-
+ 
             document.getElementById('sky-theme-btn').addEventListener('click', () => {
                 currentSkyThemeIdx = (currentSkyThemeIdx + 1) % SKY_THEMES.length;
                 const th = SKY_THEMES[currentSkyThemeIdx];
                 document.getElementById('sky-theme-btn').textContent = th.icon;
+                // نتخلص من الـ texture القديمة حتى لا تتراكم بالذاكرة
+                const old = skyDome.material.map;
                 skyDome.material.map = createSkyGradientTexture(th.top, th.mid, th.bot);
                 skyDome.material.needsUpdate = true;
+                if (old) old.dispose();
                 scene.fog.color.setHex(th.fog);
                 triggerLightningFlash();
                 showMagicToast(`${th.icon} أجواء الليل: ${th.name}`);
             });
-
+ 
             document.getElementById('music-toggle-btn').addEventListener('click', () => {
                 const playing = soundMagic.toggle();
                 document.getElementById('music-toggle-btn').textContent = playing ? '🎵' : '🔇';
                 showMagicToast(playing ? '🎵 تشغيل الصوت السينمائي المتناغم' : '🔇 كتم الصوت');
             });
-
+ 
             document.getElementById('open-spells-btn').addEventListener('click', openSpellsModal);
             document.getElementById('open-book-bottom-btn').addEventListener('click', openSpellsModal);
             document.getElementById('close-spells-btn').addEventListener('click', closeSpellsModal);
         }
-
-        window.onload = function () {
+ 
+        /************************************************************************
+         * 10. الإقلاع: ننتظر الخطوط العربية قبل رسم النصوص على الـ canvas
+         ************************************************************************/
+        window.addEventListener('load', () => {
             initWeatherOverlay();
-            initMagicalTrainWorld();
-            bindEvents();
-            animateLoop();
-        };
+ 
+            let started = false;
+            const go = () => {
+                if (started) return;
+                started = true;
+                initMagicalTrainWorld();
+                bindEvents();
+                requestAnimationFrame(animateLoop);
+            };
+ 
+            if (document.fonts && document.fonts.load) {
+                Promise.all([
+                    document.fonts.load('700 40px "Aref Ruqaa"', 'شادية'),
+                    document.fonts.load('700 40px "Amiri"', 'شادية')
+                ]).then(go, go);
+                setTimeout(go, 2000);
+            } else {
+                go();
+            }
+        });
     </script>
 </body>
 </html>
+ 
+Claude finished the response
